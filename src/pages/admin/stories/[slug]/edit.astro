@@ -2,6 +2,15 @@
 import Layout from '../../../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 
+export async function getStaticPaths() {
+  // Fetch all stories
+  const stories = await getCollection('stories');
+
+  // Map stories to their dynamic paths
+  return stories.map((story) => ({
+    params: { slug: story.slug },
+  }));
+}
 // Check authentication
 if (!Astro.cookies.has('admin_token')) {
   return Astro.redirect('/admin/login');
