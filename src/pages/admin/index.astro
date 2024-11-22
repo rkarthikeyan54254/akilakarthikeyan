@@ -1,0 +1,120 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { getComments } from '../../lib/comments';
+
+// Check authentication
+if (!Astro.cookies.has('admin_token')) {
+  return Astro.redirect('/admin/login');
+}
+
+const stories = await getCollection('stories');
+const allComments = await Promise.all(
+  stories.map(async (story) => ({
+    story,
+    comments: await getComments(story.slug)
+  }))
+);
+---
+
+<Layout title="Admin Dashboard">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold">நிர்வாக பலகை</h1>
+      <button
+        id="logout-btn"
+        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+      >
+        வெளியேறு
+      </button>
+    </div>
+
+    <div class="grid gap-8 md:grid-cols-2">
+      <!-- Stories Management -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-bold mb-4">கதைகள்</h2>
+        <div class="space-y-4">
+          {stories.map(story => (
+            <div class="flex justify-between items-center p-4 bg-gray-50 rounded">
+              <span>{story.data.title}</span>
+              <button
+                class="edit-story-btn px-3 py-1 bg-gray-900 text-white rounded hover:bg-gray-700"
+                data-slug={story.slug}
+              >
+                திருத்து
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Comments Management -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-bold mb-4">கருத்துகள்</h2>
+        <div class="space-y-4">
+          {allComments.map(({ story, comments }) => (
+            <div class="border-b pb-4 last:border-0">
+              <h3 class="font-medium mb-2">{story.data.title}</h3>
+              {comments.map(comment => (
+                <div class="flex justify-between items-center p-4 bg-gray-50 rounded mb-2">
+                  <div>
+                    <p class="font-medium">{comment.name}</p>
+                    <p class="text-sm text-gray-600">{comment.comment}</p>
+                  </div>
+                  <button
+                    class="delete-comment-btn text-red-600 hover:text-red-800"
+                    data-id={comment.id}
+                  >
+                    நீக்கு
+                  </button>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+// Handle logout
+document.getElementById('logout-btn')?.addEventListener('click', () => {
+  document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
+  window.location.href = '/admin/login';
+});
+
+// Handle comment deletion
+document.querySelectorAll('.delete-comment-btn').forEach(button => {
+  button.addEventListener('click', async () => {
+    if (!confirm('இந்த கருத்தை நீக்க விரும்புகிறீர்களா?')) return;
+
+    const commentId = button.getAttribute('data-id');
+    
+    try {
+      const response = await fetch(`/api/admin/comments/${commentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${document.cookie.match(/admin_token=([^;]+)/)?.[1]}`
+        }
+      });
+
+      if (!response.ok) throw new Error('Failed to delete comment');
+      
+      // Remove comment from DOM
+      button.closest('.flex')?.remove();
+      
+    } catch (error) {
+      alert('கருத்தை நீக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.');
+    }
+  });
+});
+
+// Handle story editing
+document.querySelectorAll('.edit-story-btn').forEach(button => {
+  button.addEventListener('click', () => {
+    const slug = button.getAttribute('data-slug');
+    window.location.href = `/admin/stories/${slug}/edit`;
+  });
+});
+</script>

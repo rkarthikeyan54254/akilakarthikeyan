@@ -1,0 +1,45 @@
+---
+import Layout from '../layouts/Layout.astro';
+import StoryCard from '../components/StoryCard.astro';
+import { getCollection } from 'astro:content';
+
+const stories = await getCollection('stories');
+const featuredStories = stories
+  .filter(story => story.data.featured)
+  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+---
+
+<Layout title="அகிலா கார்த்திகேயன் - எழுத்தாளர்">
+  <section class="text-center mb-12">
+    <h1 class="text-4xl font-bold text-gray-900 mb-4">
+      அகிலா கார்த்திகேயன் சிறுகதை தொகுப்பு மற்றும் புத்தகங்கள்
+    </h1>
+    <p class="text-xl text-gray-600 mb-8">
+      படிக்க ...சிரிக்க ....சிந்திக்க 
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">சிறப்பு கதைகள்</h2>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {featuredStories.map(story => (
+        <StoryCard
+          title={story.data.title}
+          description={story.data.description}
+          url={`/stories/${story.slug}`}
+          publishDate={story.data.publishDate}
+          genre={story.data.genre}
+        />
+      ))}
+    </div>
+  </section>
+
+  <div class="text-center mt-12">
+    <a
+      href="/stories"
+      class="inline-block bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+    >
+      அனைத்து கதைகளையும் காண்க
+    </a>
+  </div>
+</Layout>

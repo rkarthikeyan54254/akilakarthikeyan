@@ -1,0 +1,65 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import AddToCartButton from '../../components/AddToCartButton.astro';
+
+// Enable static pre-rendering
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const books = await getCollection('books');
+  return books.map(book => ({
+    params: { slug: book.slug },
+    props: { book },
+  }));
+}
+
+const { book } = Astro.props;
+
+// Add error handling
+if (!book) {
+  return new Response('Book not found', { status: 404 });
+}
+
+const { Content } = await book.render();
+
+const formattedDate = book.data.publishDate.toLocaleDateString('ta-IN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<Layout title={`${book.data.title} - அகிலா கார்த்திகேயன்`}>
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="grid md:grid-cols-2 gap-8">
+      <div>
+        <img 
+          src={book.data.coverImage} 
+          alt={`Cover of ${book.data.title}`}
+          class="w-full rounded-lg shadow-lg"
+        />
+      </div>
+      
+      <div>
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">{book.data.title}</h1>
+        <div class="text-gray-600 mb-4">
+          <p>எழுதியவர்: {book.data.author}</p>
+          <p>வெளியீடு: {formattedDate}</p>
+          <p>பக்கங்கள்: {book.data.pages}</p>
+          <p>ISBN: {book.data.isbn}</p>
+        </div>
+        
+        <div class="text-2xl font-bold text-gray-900 mb-6">
+          ₹{book.data.price}
+        </div>
+
+        <AddToCartButton book={book} />
+
+        <div class="prose prose-lg mt-8">
+          <Content />
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>

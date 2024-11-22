@@ -1,0 +1,21 @@
+{
+  "name": "அகிலா கார்த்திகேயன் - தமிழ் கதைகள்",
+  "short_name": "அகிலா கார்த்திகேயன்",
+  "description": "அகிலா கார்த்திகேயன் எழுதிய தமிழ் சிறுகதைகள் தொகுப்பு",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

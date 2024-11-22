@@ -1,0 +1,49 @@
+---
+import AddToCartButton from './AddToCartButton.astro';
+
+interface Props {
+  book: {
+    slug: string;
+    data: {
+      title: string;
+      author: string;
+      description: string;
+      coverImage: string;
+      price: number;
+      genre: string;
+      inStock: boolean;
+    }
+  }
+}
+
+const { book } = Astro.props;
+---
+
+<div class="bg-white rounded-lg shadow-md overflow-hidden transition-shadow hover:shadow-lg">
+  <a href={`/books/${book.slug}`} class="block focus:outline-none focus:ring-2 focus:ring-gray-900">
+    <div class="aspect-w-3 aspect-h-4">
+      <img 
+        src={book.data.coverImage} 
+        alt={`Cover of ${book.data.title}`}
+        class="w-full h-full object-cover"
+        loading="lazy"
+      />
+    </div>
+    <div class="p-4">
+      <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 line-clamp-2">{book.data.title}</h3>
+      <p class="text-gray-600 mb-2">{book.data.author}</p>
+      <p class="text-gray-700 mb-4 line-clamp-2 text-sm sm:text-base">{book.data.description}</p>
+      
+      <div class="flex items-center justify-between">
+        <span class="text-lg font-bold text-gray-900">₹{book.data.price}</span>
+        <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
+          {book.data.genre}
+        </span>
+      </div>
+    </div>
+  </a>
+  
+  <div class="p-4 pt-0">
+    <AddToCartButton book={book} />
+  </div>
+</div>

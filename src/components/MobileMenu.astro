@@ -1,0 +1,97 @@
+---
+interface Props {
+  genres: {
+    id: string;
+    name: string;
+  }[];
+}
+
+const { genres } = Astro.props;
+---
+
+<div 
+  id="mobile-menu"
+  class="fixed inset-0 bg-white z-40 transform translate-x-full transition-transform duration-300 ease-in-out md:hidden"
+>
+  <div class="h-full flex flex-col">
+    <div class="px-4 py-6 bg-gray-50 border-b flex justify-between items-center">
+      <h2 class="text-lg font-semibold text-gray-900">பட்டி</h2>
+      <button id="close-menu" class="text-gray-400 hover:text-gray-500">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto py-6 px-4">
+      <nav class="space-y-8">
+        <div>
+          <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">பக்கங்கள்</h3>
+          <div class="mt-3 space-y-2">
+            <a href="/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
+              முகப்பு
+            </a>
+            <a href="/about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
+              பற்றி
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">கதைகள்</h3>
+          <div class="mt-3 space-y-2">
+            <a href="/stories" class="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
+              அனைத்து கதைகள்
+            </a>
+            {genres.map(genre => (
+              <a 
+                href={`/stories/genre/${genre.id}`}
+                class="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50"
+              >
+                {genre.name}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">புத்தகங்கள்</h3>
+          <div class="mt-3 space-y-2">
+            <a href="/books" class="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">
+              அனைத்து புத்தகங்கள்
+            </a>
+            {genres.map(genre => (
+              <a 
+                href={`/books/genre/${genre.id}`}
+                class="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50"
+              >
+                {genre.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script>
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuButton = document.getElementById('mobile-menu-button');
+  const closeButton = document.getElementById('close-menu');
+
+  function toggleMenu() {
+    mobileMenu?.classList.toggle('translate-x-full');
+    document.body.classList.toggle('overflow-hidden');
+  }
+
+  menuButton?.addEventListener('click', toggleMenu);
+  closeButton?.addEventListener('click', toggleMenu);
+
+  // Close menu when clicking on a link
+  mobileMenu?.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      toggleMenu();
+    });
+  });
+</script>

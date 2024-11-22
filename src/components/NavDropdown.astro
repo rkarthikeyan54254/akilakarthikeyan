@@ -1,0 +1,53 @@
+---
+interface Props {
+  type: 'stories' | 'books';
+  genres: {
+    id: string;
+    name: string;
+  }[];
+}
+
+const { type, genres } = Astro.props;
+
+const labels = {
+  stories: {
+    title: 'கதைகள்',
+    all: 'அனைத்து கதைகள்'
+  },
+  books: {
+    title: 'புத்தகங்கள்',
+    all: 'அனைத்து புத்தகங்கள்'
+  }
+};
+---
+
+<div class="relative group">
+  <button class="flex items-center gap-1 text-gray-600 hover:text-gray-900">
+    {labels[type].title}
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </button>
+  
+  <div class="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+    <div class="py-1" role="menu">
+      <a
+        href={`/${type}`}
+        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+        role="menuitem"
+      >
+        {labels[type].all}
+      </a>
+      
+      {genres.map(genre => (
+        <a
+          href={`/${type}/genre/${genre.id}`}
+          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          role="menuitem"
+        >
+          {genre.name}
+        </a>
+      ))}
+    </div>
+  </div>
+</div>

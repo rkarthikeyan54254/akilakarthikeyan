@@ -1,0 +1,36 @@
+---
+interface Props {
+  currentGenre?: string;
+  genres: string[];
+}
+
+const { currentGenre, genres } = Astro.props;
+---
+
+<div class="mb-8">
+  <h2 class="text-lg font-semibold mb-4">வகைகள்</h2>
+  <div class="flex flex-wrap gap-3">
+    <a
+      href="/stories"
+      class={`px-4 py-2 rounded-full text-sm ${
+        !currentGenre 
+          ? 'bg-gray-900 text-white' 
+          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+      }`}
+    >
+      அனைத்தும்
+    </a>
+    {genres.map(genre => (
+      <a
+        href={`/stories/genre/${genre}`}
+        class={`px-4 py-2 rounded-full text-sm ${
+          currentGenre === genre
+            ? 'bg-gray-900 text-white'
+            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+        }`}
+      >
+        {genre}
+      </a>
+    ))}
+  </div>
+</div>

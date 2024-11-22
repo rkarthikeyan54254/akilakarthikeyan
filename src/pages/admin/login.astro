@@ -1,0 +1,89 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Redirect if already logged in
+if (Astro.cookies.has('admin_token')) {
+  return Astro.redirect('/admin');
+}
+---
+
+<Layout title="Admin Login">
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+      <div>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          நிர்வாகி உள்நுழைவு
+        </h2>
+      </div>
+      <form id="login-form" class="mt-8 space-y-6">
+        <div class="rounded-md shadow-sm -space-y-px">
+          <div>
+            <label for="username" class="sr-only">பயனர்பெயர்</label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              required
+              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm"
+              placeholder="பயனர்பெயர்"
+            />
+          </div>
+          <div>
+            <label for="password" class="sr-only">கடவுச்சொல்</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm"
+              placeholder="கடவுச்சொல்"
+            />
+          </div>
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          >
+            உள்நுழைய
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</Layout>
+
+<script>
+document.getElementById('login-form')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const formData = new FormData(e.target as HTMLFormElement);
+  
+  try {
+    const response = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username: formData.get('username'),
+        password: formData.get('password')
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Login failed');
+    }
+
+    const { token } = await response.json();
+    
+    // Store token and redirect
+    document.cookie = `admin_token=${token}; path=/; max-age=86400`;
+    window.location.href = '/admin';
+    
+  } catch (error) {
+    alert('உள்நுழைவு தோல்வி. மீண்டும் முயற்சிக்கவும்.');
+  }
+});
+</script>

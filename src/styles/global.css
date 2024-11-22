@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom dropdown styles */
+.dropdown-menu {
+  transform-origin: top;
+  transition: all 0.2s ease-out;
+}
+
+.dropdown-menu.hidden {
+  transform: scaleY(0);
+  opacity: 0;
+}
+
+/* Ensure dropdown is above other content */
+.dropdown-menu {
+  z-index: 50;
+}
+
+/* Smooth hover transitions */
+.nav-link {
+  transition: color 0.2s ease;
+}
+
+/* Active state for current genre */
+.nav-link.active {
+  color: theme('colors.gray.900');
+  font-weight: 600;
+}

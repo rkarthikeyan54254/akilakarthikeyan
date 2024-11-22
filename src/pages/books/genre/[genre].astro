@@ -1,0 +1,54 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import BookCard from '../../../components/BookCard.astro';
+import GenreFilter from '../../../components/GenreFilter.astro';
+import { getCollection } from 'astro:content';
+
+// Enable static pre-rendering
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const books = await getCollection('books');
+  const genres = [...new Set(books.map(book => book.data.genre))];
+  
+  return genres.map(genre => ({
+    params: { genre },
+    props: { 
+      books: books.filter(book => book.data.genre === genre),
+      genres
+    },
+  }));
+}
+
+const { genre } = Astro.params;
+const { books, genres } = Astro.props;
+
+// Add error handling
+if (!books || !genres) {
+  return new Response('Books not found', { status: 404 });
+}
+
+const sortedBooks = books.sort((a, b) => 
+  b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
+);
+
+const genreDisplayNames = {
+  'நகைச்சுவை': 'நகைச்சுவை புத்தகங்கள்',
+  'நாடகம்': 'நாடக புத்தகங்கள்',
+  'ஆன்மீகம்': 'ஆன்மீக புத்தகங்கள்',
+  'சமூகம்': 'சமூக புத்தகங்கள்',
+  'அனுபவம்': 'அனுபவ புத்தகங்கள்'
+};
+---
+
+<Layout title={`${genreDisplayNames[genre]} - அகிலா கார்த்திகேயன்`}>
+  <h1 class="text-3xl font-bold text-gray-900 mb-8">{genreDisplayNames[genre]}</h1>
+  
+  <GenreFilter currentGenre={genre} genres={genres} />
+  
+  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    {sortedBooks.map(book => (
+      <BookCard book={book} />
+    ))}
+  </div>
+</Layout>

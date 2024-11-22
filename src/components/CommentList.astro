@@ -1,0 +1,58 @@
+---
+interface Props {
+  storySlug: string;
+  comments: Array<{
+    name: string;
+    comment: string;
+    date: string;
+  }>;
+}
+
+const { storySlug, comments } = Astro.props;
+
+function formatDate(dateString: string) {
+  return new Date(dateString).toLocaleDateString('ta-IN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+---
+
+<div id="comments-container" class="space-y-6 mt-8">
+  {comments.map(comment => (
+    <div class="bg-gray-50 rounded-lg p-4">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-medium text-gray-900">{comment.name}</h3>
+        <time class="text-sm text-gray-500">{formatDate(comment.date)}</time>
+      </div>
+      <p class="text-gray-700">{comment.comment}</p>
+    </div>
+  ))}
+</div>
+
+<script>
+document.addEventListener('comment-added', (e: CustomEvent) => {
+  const container = document.getElementById('comments-container');
+  if (!container) return;
+
+  const comment = e.detail;
+  const date = new Date(comment.date).toLocaleDateString('ta-IN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
+  const commentElement = document.createElement('div');
+  commentElement.className = 'bg-gray-50 rounded-lg p-4';
+  commentElement.innerHTML = `
+    <div class="flex items-center justify-between mb-2">
+      <h3 class="font-medium text-gray-900">${comment.name}</h3>
+      <time class="text-sm text-gray-500">${date}</time>
+    </div>
+    <p class="text-gray-700">${comment.comment}</p>
+  `;
+
+  container.insertBefore(commentElement, container.firstChild);
+});
+</script>

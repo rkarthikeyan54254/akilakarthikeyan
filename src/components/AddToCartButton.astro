@@ -1,0 +1,60 @@
+---
+import { cartItems } from '../stores/cartStore';
+
+interface Props {
+  book: {
+    slug: string;
+    data: {
+      title: string;
+      price: number;
+      coverImage: string;
+      inStock: boolean;
+    }
+  }
+}
+
+const { book } = Astro.props;
+---
+
+<button
+  class={`w-full py-3 px-6 rounded-lg transition-colors ${
+    book.data.inStock 
+      ? 'bg-gray-900 text-white hover:bg-gray-800' 
+      : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+  }`}
+  data-book={JSON.stringify({
+    id: book.slug,
+    title: book.data.title,
+    price: book.data.price,
+    coverImage: book.data.coverImage
+  })}
+  disabled={!book.data.inStock}
+  id="add-to-cart"
+>
+  {book.data.inStock ? 'கூடைக்கு சேர்க்க' : 'கையிருப்பு இல்லை'}
+</button>
+
+<script>
+  import { addToCart } from '../stores/cartStore';
+
+  const button = document.getElementById('add-to-cart');
+  
+  button?.addEventListener('click', () => {
+    const bookData = button.dataset.book;
+    if (!bookData) return;
+
+    const book = JSON.parse(bookData);
+    addToCart(book);
+
+    // Show success message
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg';
+    toast.textContent = 'கூடைக்கு சேர்க்கப்பட்டது';
+    document.body.appendChild(toast);
+
+    // Remove toast after 2 seconds
+    setTimeout(() => {
+      toast.remove();
+    }, 2000);
+  });
+</script>

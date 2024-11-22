@@ -1,0 +1,51 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import StoryCard from '../../../components/StoryCard.astro';
+import { getCollection } from 'astro:content';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const stories = await getCollection('stories');
+  const genres = [...new Set(stories.map(story => story.data.genre))];
+  
+  return genres.map(genre => ({
+    params: { genre },
+    props: { 
+      stories: stories.filter(story => story.data.genre === genre),
+      genres
+    },
+  }));
+}
+
+const { genre } = Astro.params;
+const { stories, genres } = Astro.props;
+
+const sortedStories = stories.sort((a, b) => 
+  b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
+);
+
+const genreDisplayNames = {
+  'நகைச்சுவை': 'நகைச்சுவை கதைகள்',
+  'நாடகம்': 'நாடக கதைகள்',
+  'ஆன்மீகம்': 'ஆன்மீக கதைகள்',
+  'சமூகம்': 'சமூக கதைகள்',
+  'அனுபவம்': 'அனுபவக் கதைகள்'
+};
+---
+
+<Layout title={`${genreDisplayNames[genre]} - அகிலா கார்த்திகேயன்`}>
+  <h1 class="text-3xl font-bold text-gray-900 mb-8">{genreDisplayNames[genre]}</h1>
+  
+  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    {sortedStories.map(story => (
+      <StoryCard
+        title={story.data.title}
+        description={story.data.description}
+        url={`/stories/${story.slug}`}
+        publishDate={story.data.publishDate}
+        genre={story.data.genre}
+      />
+    ))}
+  </div>
+</Layout>

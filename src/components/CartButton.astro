@@ -1,0 +1,30 @@
+---
+import { cartItems } from '../stores/cartStore';
+---
+
+<div class="relative" id="cart-button">
+  <button
+    class="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+    aria-label="View cart"
+  >
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+    </svg>
+    <span id="cart-count" class="absolute -top-1 -right-1 bg-gray-900 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+      0
+    </span>
+  </button>
+</div>
+
+<script>
+  import { cartItems } from '../stores/cartStore';
+  
+  const cartCount = document.getElementById('cart-count');
+  
+  // Update cart count when items change
+  cartItems.subscribe(items => {
+    if (cartCount) {
+      cartCount.textContent = items.reduce((sum, item) => sum + item.quantity, 0).toString();
+    }
+  });
+</script>

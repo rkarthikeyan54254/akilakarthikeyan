@@ -1,0 +1,108 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+
+const genres = [
+  { id: 'நகைச்சுவை', name: 'நகைச்சுவை' },
+  { id: 'நாடகம்', name: 'நாடகம்' },
+  { id: 'ஆன்மீகம்', name: 'ஆன்மீகம்' },
+  { id: 'சமூகம்', name: 'சமூகம்' },
+  { id: 'அனுபவம்', name: 'அனுபவம்' }
+];
+
+import NavDropdown from '../components/NavDropdown.astro';
+import CartButton from '../components/CartButton.astro';
+import CartDrawer from '../components/CartDrawer.astro';
+import MobileMenu from '../components/MobileMenu.astro';
+---
+
+<!doctype html>
+<html lang="ta">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111827" />
+    <title>{title}</title>
+    <meta name="description" content={description || 'தமிழ் சிறுகதைகள் தொகுப்பு'} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <header class="bg-white shadow-sm sticky top-0 z-30">
+      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <a href="/" class="text-xl sm:text-2xl font-bold text-gray-900">அகிலா கார்த்திகேயன் - எழுத்தாளர் </a>
+        
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex gap-6 items-center">
+          <a href="/" class="text-gray-600 hover:text-gray-900">முகப்பு</a>
+          <NavDropdown type="stories" genres={genres} />
+          <NavDropdown type="books" genres={genres} />
+          <a href="/about" class="text-gray-600 hover:text-gray-900">பற்றி</a>
+          <CartButton />
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div class="flex items-center gap-4 md:hidden">
+          <CartButton />
+          <button 
+            id="mobile-menu-button"
+            class="text-gray-600 hover:text-gray-900"
+            aria-label="Menu"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <MobileMenu genres={genres} />
+    
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <slot />
+    </main>
+
+    <footer class="bg-white border-t mt-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-gray-600">
+        <p>&copy; {new Date().getFullYear()} அகிலா கார்த்திகேயன் - அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை</p>
+      </div>
+    </footer>
+    <CartDrawer />
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --font-tamil: 'Mukta Malar', sans-serif;
+  }
+  
+  body {
+    font-family: var(--font-tamil);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Better touch scrolling */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>

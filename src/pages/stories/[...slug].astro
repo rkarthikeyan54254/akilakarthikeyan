@@ -1,0 +1,54 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const stories = await getCollection('stories');
+  return stories.map(story => ({
+    params: { slug: story.slug },
+    props: { story },
+  }));
+}
+
+const { story } = Astro.props;
+const { Content } = await story.render();
+
+const formattedDate = new Date(story.data.publishDate).toLocaleDateString('ta-IN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<Layout title={`${story.data.title} - அகிலா கார்த்திகேயன்`}>
+  <article class="prose prose-lg mx-auto px-4">
+    <h1 class="text-4xl font-bold text-gray-900 mb-4">{story.data.title}</h1>
+    
+    <div class="flex items-center gap-4 text-gray-600 mb-8">
+      <time datetime={story.data.publishDate.toISOString()}>{formattedDate}</time>
+      <span>எழுதியவர்: {story.data.author}</span>
+      <span class="px-3 py-1 bg-gray-100 rounded-full text-sm">
+        {story.data.genre}
+      </span>
+    </div>
+
+    <div class="story-content mt-8">
+      <Content />
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .prose {
+    max-width: 65ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .story-content {
+    font-size: 1.2rem;
+    line-height: 1.8;
+  }
+</style>
