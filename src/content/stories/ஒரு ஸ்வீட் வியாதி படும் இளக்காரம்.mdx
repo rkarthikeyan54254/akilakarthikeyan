@@ -13,7 +13,70 @@ image: '/images/akilakarthikeyan_profile.jpg'
   <img src={frontmatter.image} alt="Story Image" class="w-full rounded-lg shadow-lg" />
   <figcaption class="text-gray-600 text-sm mt-2">{frontmatter.description}</figcaption>
 </figure>
+<div class="mt-6">
+  <p class="text-lg font-bold">Share this story:</p>
+  <div class="flex space-x-6 justify-start mt-4">
+    {/* Facebook */}
+    <a
+      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://your-website-url.com")}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-blue-600 text-2xl">
+          <i class="fab fa-facebook"></i>
+        </span>
+        <span class="text-blue-600 hover:underline mt-1">Facebook</span>
+      </div>
+    </a>
 
+    {/* Twitter */}
+    <a
+      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent("https://your-website-url.com")}&text=${encodeURIComponent(frontmatter.title)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-blue-400 text-2xl">
+          <i class="fab fa-twitter"></i>
+        </span>
+        <span class="text-blue-400 hover:underline mt-1">Twitter</span>
+      </div>
+    </a>
+
+    {/* WhatsApp */}
+    <a
+      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://your-website-url.com`)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-green-600 text-2xl">
+          <i class="fab fa-whatsapp"></i>
+        </span>
+        <span class="text-green-600 hover:underline mt-1">WhatsApp</span>
+      </div>
+    </a>
+
+    {/* Instagram */}
+    <a
+      href="https://www.instagram.com/"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-pink-500 text-2xl">
+          <i class="fab fa-instagram"></i>
+        </span>
+        <span class="text-pink-500 hover:underline mt-1">Instagram</span>
+      </div>
+    </a>
+  </div>
+</div>
 'ஷுகர் பேஷன்ட்' என்று சொல்லிக்கொள்வது இப்போதெல்லாம் ஒரு கெளரவ அந்தஸ்தாக கருதப்படுகிறது.
 
 ''விஜி... ரொம்ப பலஹினமா இருக்குன்னு டாக்டர்கிட்டே போனேன். ஷுகர் இருக்கான்னு டெஸ்ட் பண்ண எழுதி கொடுத்தார். டெஸ்ட் ரிஸல்ட் என்னவாயிருக்குமோன்னு பயந்தேன்.... நல்ல வேளையா லிமிட்டுக்கு மேலேயே ஷுகர் இருக்குன்னு தெரிஞ்சது... 160 தும் 280 தும் இருக்கு... உனக்கு எத்தனையிருக்குன்னு சொன்னே... ஓகோ 140, 200 றா? என்னைவிட ரொம்ப குறைச்சல்தான்... நான் கொஞ்சம் பெட்டர் பொஸிஷன்லே இருக்கேன் போலிருக்கு'' என் மனைவி அகிலா தன் கன்னி ரத்த சர்க்கரை பரிசோதனையில் தான் பெற்ற வெற்றியைப்போல் தன் தங்கையிடம் இப்படி தன் பிளட்ஷுகர் வீர்யத்தை ​ஸெல்லில் பெருமையாக பேசிக் கொண்டிருந்தாள்.

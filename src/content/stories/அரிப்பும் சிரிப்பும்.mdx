@@ -13,7 +13,70 @@ image: '/images/arippum-sirippum.jpeg'
   <img src={frontmatter.image} alt="Story Image" class="w-full rounded-lg shadow-lg" />
   <figcaption class="text-gray-600 text-sm mt-2">{frontmatter.description}</figcaption>
 </figure>
+<div class="mt-6">
+  <p class="text-lg font-bold">Share this story:</p>
+  <div class="flex space-x-6 justify-start mt-4">
+    {/* Facebook */}
+    <a
+      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://your-website-url.com")}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-blue-600 text-2xl">
+          <i class="fab fa-facebook"></i>
+        </span>
+        <span class="text-blue-600 hover:underline mt-1">Facebook</span>
+      </div>
+    </a>
 
+    {/* Twitter */}
+    <a
+      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent("https://your-website-url.com")}&text=${encodeURIComponent(frontmatter.title)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-blue-400 text-2xl">
+          <i class="fab fa-twitter"></i>
+        </span>
+        <span class="text-blue-400 hover:underline mt-1">Twitter</span>
+      </div>
+    </a>
+
+    {/* WhatsApp */}
+    <a
+      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://your-website-url.com`)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-green-600 text-2xl">
+          <i class="fab fa-whatsapp"></i>
+        </span>
+        <span class="text-green-600 hover:underline mt-1">WhatsApp</span>
+      </div>
+    </a>
+
+    {/* Instagram */}
+    <a
+      href="https://www.instagram.com/"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-pink-500 text-2xl">
+          <i class="fab fa-instagram"></i>
+        </span>
+        <span class="text-pink-500 hover:underline mt-1">Instagram</span>
+      </div>
+    </a>
+  </div>
+</div>
 பாட்டன் முப்பாட்டன் என எங்கள் வம்சத்தில் யாரும் எந்த சொத்தையும் எழுதி வைக்காத நிலையில் எங்கள் அண்ணன் தம்பிக்குள் சொத்து அபகரிப்பு என்ற வன்முறை தலைகாட்ட வழியில்லாமல் போனது. ஆனால் வழி வழியாக என் தாத்தா, அப்பா, என்று வம்சம்தோறும் தொடரும் சொத்தாக இந்த அபார அரிப்பு எல்லோருக்குமே சம அளவில் பகிர்ந்து கொடுக்கப்பட்டிருக்கும் நேர்மையை பாராட்டியே தீர வேண்டும்.
 வம்சத்தில் யாராவது அறுபதைத் தாண்டிவிட்டால் இந்த அரிப்புத் தேவதைக்குத் தாங்காது. அவர்களை ஆலிங்கனம் செய்து கொண்டு அறுபதாம் கல்யாணத்திற்கு இரண்டாவது சம்சாரமாக வந்து உட்கார்ந்து வலிய வாழ்க்கைப் பட்டுவிடும்.
 

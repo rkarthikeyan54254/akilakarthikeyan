@@ -13,7 +13,70 @@ image: '/images/akilakarthikeyan_profile.jpg'
   <img src={frontmatter.image} alt="Story Image" class="w-full rounded-lg shadow-lg" />
   <figcaption class="text-gray-600 text-sm mt-2">{frontmatter.description}</figcaption>
 </figure>
+<div class="mt-6">
+  <p class="text-lg font-bold">Share this story:</p>
+  <div class="flex space-x-6 justify-start mt-4">
+    {/* Facebook */}
+    <a
+      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://your-website-url.com")}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-blue-600 text-2xl">
+          <i class="fab fa-facebook"></i>
+        </span>
+        <span class="text-blue-600 hover:underline mt-1">Facebook</span>
+      </div>
+    </a>
 
+    {/* Twitter */}
+    <a
+      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent("https://your-website-url.com")}&text=${encodeURIComponent(frontmatter.title)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-blue-400 text-2xl">
+          <i class="fab fa-twitter"></i>
+        </span>
+        <span class="text-blue-400 hover:underline mt-1">Twitter</span>
+      </div>
+    </a>
+
+    {/* WhatsApp */}
+    <a
+      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://your-website-url.com`)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-green-600 text-2xl">
+          <i class="fab fa-whatsapp"></i>
+        </span>
+        <span class="text-green-600 hover:underline mt-1">WhatsApp</span>
+      </div>
+    </a>
+
+    {/* Instagram */}
+    <a
+      href="https://www.instagram.com/"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-pink-500 text-2xl">
+          <i class="fab fa-instagram"></i>
+        </span>
+        <span class="text-pink-500 hover:underline mt-1">Instagram</span>
+      </div>
+    </a>
+  </div>
+</div>
 மூத்த குடிமகன்களில் இப்போதெல்லாம் மூட்டுவலி முதியவர்கள் என்று ஒரு சிறப்பு பிரிவு உருவாகியுள்ளது. அது மூட்டுவலியா முட்டி வலியா என்பதை விவாத மேடையாக்கி தலைவலியை இழுத்துவிட்டுக் கொள்ள விரும்பவில்லை.
 
 புராண காலங்களின் முதியவர்களுக்கு கூன் விழுந்துள்ளதை ராமாயண கூனி மூலம் அறிய முடிகின்றது. அவர்களுக்கு கூனோடு பல்லும் விழுந்திருக்கலாம். ஆனால் யாருக்கும் மூட்டுவலி வந்ததாக இதிகாசங்களில் சாட்சி இல்லை.

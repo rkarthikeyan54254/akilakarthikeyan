@@ -13,7 +13,70 @@ image: '/images/akilakarthikeyan_profile.jpg'
   <img src={frontmatter.image} alt="Story Image" class="w-full rounded-lg shadow-lg" />
   <figcaption class="text-gray-600 text-sm mt-2">{frontmatter.description}</figcaption>
 </figure>
+<div class="mt-6">
+  <p class="text-lg font-bold">Share this story:</p>
+  <div class="flex space-x-6 justify-start mt-4">
+    {/* Facebook */}
+    <a
+      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://your-website-url.com")}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-blue-600 text-2xl">
+          <i class="fab fa-facebook"></i>
+        </span>
+        <span class="text-blue-600 hover:underline mt-1">Facebook</span>
+      </div>
+    </a>
 
+    {/* Twitter */}
+    <a
+      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent("https://your-website-url.com")}&text=${encodeURIComponent(frontmatter.title)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-blue-400 text-2xl">
+          <i class="fab fa-twitter"></i>
+        </span>
+        <span class="text-blue-400 hover:underline mt-1">Twitter</span>
+      </div>
+    </a>
+
+    {/* WhatsApp */}
+    <a
+      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://your-website-url.com`)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-green-600 text-2xl">
+          <i class="fab fa-whatsapp"></i>
+        </span>
+        <span class="text-green-600 hover:underline mt-1">WhatsApp</span>
+      </div>
+    </a>
+
+    {/* Instagram */}
+    <a
+      href="https://www.instagram.com/"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-pink-500 text-2xl">
+          <i class="fab fa-instagram"></i>
+        </span>
+        <span class="text-pink-500 hover:underline mt-1">Instagram</span>
+      </div>
+    </a>
+  </div>
+</div>
 உங்களிடம் முப்பத்திரண்டு பல்லும் கொட்டாமல் இருக்கிறதா உங்களுக்கு அதை தினமும் துலக்கும் பழக்கம் இருக்கிறதா? அப்படி ஒரு பழக்கம் இருந்தால் அதெற்கென்று ஒரு டூத் பிரஷ்ஷும், டூத் பேஸ்ட்டும் வாங்கும் யோக்கிதை இருக்கிறதா? இவ்வளவு 'இருக்கிறதா'வுக்கு உங்களிடம் 'ஆமாங்க ஆமாம்' என்ற பதில் இருந்தால் மட்டும் போதாது. அப்படிப்பட்ட உங்கள் மனம் கவர்ந்த, பல்லைக் கவர்ந்த டூத் பேஸ்ட்டில் என்னென்ன இருக்கின்றன என்பதையெல்லாம் நீங்கள் தெரிந்து வைத்துக் கொண்டபின்தான் அதை பிதுக்கி உங்கள் பிரஷ் மீது படர விட வேண்டும். இல்லையென்றால் நீங்கள் மீதமிருக்கும் உங்கள் பல்லை தேய்க்கும்போது தொபகடீரென்று வானத்திலிருந்தோ, மரத்தின் மேலிருந்தோ ஸ்பைடர் வுமன் (spider woman) கணக்காக ஒரு யுவதி படாலென்று இறங்கி வந்து "உங்க டூத் பேஸ்ட்லே காரம் இருக்கா, கசப்பு இருக்கா?" என்று உங்களை திடுக்கிடும்படி கேட்டு மிச்சமிருக்கும் பற்களையும் ஆமீதியில் ஆடச் செய்துவிடும் அபாயம் நேரலாம்.
 
 உங்கள் டூத் பேஸ்ட்டில் இன்னின்ன மளிகை சாமான்கள் இருக்கவேண்டும் என்று போதனை செய்ய பேய் படங்களின் திடுக்கிட வைக்கும் யுக்தியை கையாள வேண்டிய அவசியம் இருக்கிறதா என்று அவர்களிடம் நம்மை கேட்க வைக்கிறது.

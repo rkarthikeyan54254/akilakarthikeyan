@@ -13,7 +13,70 @@ image: '/images/akilakarthikeyan_profile.jpg'
   <img src={frontmatter.image} alt="Story Image" class="w-full rounded-lg shadow-lg" />
   <figcaption class="text-gray-600 text-sm mt-2">{frontmatter.description}</figcaption>
 </figure>
+<div class="mt-6">
+  <p class="text-lg font-bold">Share this story:</p>
+  <div class="flex space-x-6 justify-start mt-4">
+    {/* Facebook */}
+    <a
+      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://your-website-url.com")}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-blue-600 text-2xl">
+          <i class="fab fa-facebook"></i>
+        </span>
+        <span class="text-blue-600 hover:underline mt-1">Facebook</span>
+      </div>
+    </a>
 
+    {/* Twitter */}
+    <a
+      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent("https://your-website-url.com")}&text=${encodeURIComponent(frontmatter.title)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-blue-400 text-2xl">
+          <i class="fab fa-twitter"></i>
+        </span>
+        <span class="text-blue-400 hover:underline mt-1">Twitter</span>
+      </div>
+    </a>
+
+    {/* WhatsApp */}
+    <a
+      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://your-website-url.com`)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-green-600 text-2xl">
+          <i class="fab fa-whatsapp"></i>
+        </span>
+        <span class="text-green-600 hover:underline mt-1">WhatsApp</span>
+      </div>
+    </a>
+
+    {/* Instagram */}
+    <a
+      href="https://www.instagram.com/"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-pink-500 text-2xl">
+          <i class="fab fa-instagram"></i>
+        </span>
+        <span class="text-pink-500 hover:underline mt-1">Instagram</span>
+      </div>
+    </a>
+  </div>
+</div>
 அமெரிக்காவில் பையன் அழைத்துச் சென்ற கடைகளுக்கு சென்ற போது ஆறாம் வாய்ப்பாடும் அறுபதாம் வாய்ப்பாடும் எனக்கு தேவையாயிருந்தது. இண்டியன் ஸ்டோர்ஸ், நாமஸ்தே ஸ்டோர்ஸ் என்று நம் வடக்கத்தி இந்தியர்கள் நமக்காகவே அரிசி, பருப்பு, மஞ்சள் தூள், கற்பூரம் என அனைத்திந்திய சமாசாரங்களையும் அத்தனை மைல்களுக்கப்பால் கொண்டு வந்து விற்பதால், அங்கேயும் பண்டிகை நாட்களில் புளியோதரை முதல் பட்டாணி சுண்டல் வரை வீட்டில் செய்ய முடிகின்றது.
 
 இது போதாதென்று நம்ம ஊர் பிள்யைர், சிவன் விஷ்ணு, காமாட்சி என்று அனைத்து தெய்வங்களும் பாஸ்போர்ட் விசா எதுவுமின்றி கோயில் குடிகொண்டு வரலட்சுமி விரதம், விநாயக சதுர்த்தி, நவராத்திரி, பிரதோஷம் முதற்கொண்டு பக்தர்கள் அலுமினியம் ஃபாயில்களில் கொண்டு வரும் சர்க்கரை பொங்கல், கொழக்கட்டையுடன் கொண்டாடும் உரிமையையும் நிலை நாட்டிக் கொண்டிருக்கிறார்கள்.

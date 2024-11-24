@@ -7,12 +7,79 @@ featured: true
 genre: 'நகைச்சுவை'
 tags: ['குடும்பம்', 'காதல்']
 image: '/images/sleeper-cell-deepavali.jpeg'
-
 ---
 <figure>
   <img src={frontmatter.image} alt="Story Image" class="w-full rounded-lg shadow-lg" />
   <figcaption class="text-gray-600 text-sm mt-2">{frontmatter.description}</figcaption>
 </figure>
+
+
+<div class="mt-6">
+  <p class="text-lg font-bold">Share this story:</p>
+  <div class="flex space-x-6 justify-start mt-4">
+    {/* Facebook */}
+    <a
+      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://your-website-url.com")}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-blue-600 text-2xl">
+          <i class="fab fa-facebook"></i>
+        </span>
+        <span class="text-blue-600 hover:underline mt-1">Facebook</span>
+      </div>
+    </a>
+
+    {/* Twitter */}
+    <a
+      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent("https://your-website-url.com")}&text=${encodeURIComponent(frontmatter.title)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-blue-400 text-2xl">
+          <i class="fab fa-twitter"></i>
+        </span>
+        <span class="text-blue-400 hover:underline mt-1">Twitter</span>
+      </div>
+    </a>
+
+    {/* WhatsApp */}
+    <a
+      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://your-website-url.com`)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-green-600 text-2xl">
+          <i class="fab fa-whatsapp"></i>
+        </span>
+        <span class="text-green-600 hover:underline mt-1">WhatsApp</span>
+      </div>
+    </a>
+
+    {/* Instagram */}
+    <a
+      href="https://www.instagram.com/"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-pink-500 text-2xl">
+          <i class="fab fa-instagram"></i>
+        </span>
+        <span class="text-pink-500 hover:underline mt-1">Instagram</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+
 
 விடிந்தால் தீபாவளி; கையில், மொபைல் போனுடன், ஆழ்ந்த, 'ஸ்லீப்'பில் இருந்த தாண்டவராயனை, அதிரடியாக எழுப்பினாள், மனைவி அலமேலு...
 ''உங்களுக்கென்ன பெரிய, 'ஸ்லீப்பர் செல்'லுன்னு நெனைப்பா... கையில செல்லை பிடிச்சு, குறட்டை விட்டு தூங்கினுக்கிறீங்க... ராத்திரி, பிரேக்கிங் நியூஸ்ல, அந்த ரிசாட்காரங்களுக்கு ஒரு ஆளு குறையுதுன்னு சொன்னாங்கல்ல... பொழைக்கத் தெரிஞ்ச ஜன்மமாயிருந்தா, எப்படா விடியும்ன்னு தூங்காம காத்திருந்து, விடிஞ்சதும் ஓடிப் போய் ஆதரவு கொடுத்து, தலைவர் தர்றத வாங்கிக்கினு வரும்...'' என்று அர்ச்சித்தவள், ''சட்டுபுட்டுன்னு தலைக்கு ஊத்துகினு, தீபாவளி பலகாரம் சாப்பிட்டுட்டு, ரிசார்ட்டுக்கு ஓடப்பாருங்க. உங்களுக்கு முன் பக்கிரிசாமி போயிடப் போறாரு,'' ஊசி பட்டாசாக அலமேலு வெடிக்க, ராக்கெட் வேகத்தில் எழுந்தார், தாண்டவராயன்.

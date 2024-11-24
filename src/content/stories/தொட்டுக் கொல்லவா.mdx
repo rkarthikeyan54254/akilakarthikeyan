@@ -13,7 +13,70 @@ image: '/images/akilakarthikeyan_profile.jpg'
   <img src={frontmatter.image} alt="Story Image" class="w-full rounded-lg shadow-lg" />
   <figcaption class="text-gray-600 text-sm mt-2">{frontmatter.description}</figcaption>
 </figure>
+<div class="mt-6">
+  <p class="text-lg font-bold">Share this story:</p>
+  <div class="flex space-x-6 justify-start mt-4">
+    {/* Facebook */}
+    <a
+      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://your-website-url.com")}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-blue-600 text-2xl">
+          <i class="fab fa-facebook"></i>
+        </span>
+        <span class="text-blue-600 hover:underline mt-1">Facebook</span>
+      </div>
+    </a>
 
+    {/* Twitter */}
+    <a
+      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent("https://your-website-url.com")}&text=${encodeURIComponent(frontmatter.title)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-blue-400 text-2xl">
+          <i class="fab fa-twitter"></i>
+        </span>
+        <span class="text-blue-400 hover:underline mt-1">Twitter</span>
+      </div>
+    </a>
+
+    {/* WhatsApp */}
+    <a
+      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://your-website-url.com`)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-green-600 text-2xl">
+          <i class="fab fa-whatsapp"></i>
+        </span>
+        <span class="text-green-600 hover:underline mt-1">WhatsApp</span>
+      </div>
+    </a>
+
+    {/* Instagram */}
+    <a
+      href="https://www.instagram.com/"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-center"
+    >
+      <div class="flex flex-col items-center">
+        <span class="text-pink-500 text-2xl">
+          <i class="fab fa-instagram"></i>
+        </span>
+        <span class="text-pink-500 hover:underline mt-1">Instagram</span>
+      </div>
+    </a>
+  </div>
+</div>
 ''இன்னிக்கு என்ன டிபன் பண்ணட்டும்?'' என்று ஒப்புக்காக கணவன்மார்களிடம் கேட்டுவிட்டு, ஏற்கனவே உத்தேசித்துள்ளதைத்தான் மனைவிமார்கள் செய்வார்களென்பது எல்லோரும் அறிந்ததே. அவர்களின் அன்றைய சாய்ஸாக இட்லியோ, தோசையோ, பொங்கலோ, உப்புமாவோ, அது எந்த தீனியாய் இருந்தாலும் அதை கணவர்மார்கள் திணித்துக் கொள்ளத்தான் போகிறோம். அப்படி சிரமப்பட்டு முழுங்கும் நிலையில் தயாரிக்கப்படும் சிற்றுண்டிகளுக்கு ஒத்தாசையாக உபஉண்டி எனப்படும் தொட்டுக்கொள்ளும் ஐட்டங்களையாவது உருப்படியாக செய்து கணவர்மார்களின் கஷ்டத்தைத் தீர்க்கிறார்களா என்றால் அதுவுமில்லை.
 
 ஆக்கப் பொறுத்தவனுக்கு ஆறப் பொறுக்க முடியவில்லை என்று ஆண்களை குறை கூறுவது போல, சிற்றுண்டியை ஏனோதானோவென்று ஆக்கத் தெரிந்த மங்கையர்களில் பலருக்கு ஏனோ அதற்கான சைட் டிஷ்ஷை ஆக்கும் பொறுப்பில்லாமல் போய்விடுகிறது.
