@@ -1,29 +1,13 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../layouts/Layout.astro';  // Import your Layout component
 
+// Define the image path in the frontmatter
+const imagePath = '/images/about_author.jpg'; // Path to your image in the public folder
 ---
-
 
 <Layout title="அகிலா கார்த்திகேயன் - எழுத்தாளர்">
   <div class="max-w-4xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-4">About the Author</h1>
-    <p class="text-lg mb-4">
-      Welcome to our website! We are passionate about providing users with the best
-      experience while exploring the digital space.
-    </p>
-    <p class="text-lg mb-4">
-      Our mission is to make information accessible and tools easy to use, helping you achieve
-      your goals with minimal effort.
-    </p>
-    <p class="text-lg">
-      Thank you for visiting, and feel free to explore more about what we have to offer!
-    </p>
-    <p class="text-lg">
-      Akila Karthikeyan
-
-
-      akilakarthikeyan@gmail.com
-    </p>
+    <!-- Image rendering with alt text and styles -->
+    <img src={imagePath} alt="About the Author" class="w-full rounded-lg shadow-lg" />
   </div>
 </Layout>
-
