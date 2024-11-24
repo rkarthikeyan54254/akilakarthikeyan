@@ -22,7 +22,10 @@ const formattedDate = new Date(story.data.publishDate).toLocaleDateString('ta-IN
 });
 ---
 
-<Layout title={`${story.data.title} - அகிலா கார்த்திகேயன்`}>
+<Layout title={`${story.data.title} - அகிலா கார்த்திகேயன்`}
+  description={story.data.description}
+  image={story.data.image}>
+
   <article class="prose prose-lg mx-auto px-4">
     <h1 class="text-4xl font-bold text-gray-900 mb-4">{story.data.title}</h1>
     

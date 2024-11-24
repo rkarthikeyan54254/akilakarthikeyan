@@ -1,0 +1,23 @@
+---
+// ShareButtons.astro
+export interface Props {
+  url: string;
+  title: string;
+}
+
+const { url } = Astro.props;
+const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(`${title} - ${url}`)}`;
+---
+
+<div style="display: flex; gap: 10px; margin-top: 20px;">
+  <!-- Facebook Share Button -->
+  <a href={facebookShareUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
+    <img src="/icons/facebook-icon.svg" alt="Facebook" style="width: 32px; height: 32px;" />
+  </a>
+
+  <!-- WhatsApp Share Button -->
+  <a href={whatsappShareUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">
+    <img src="/icons/whatsapp-icon.svg" alt="WhatsApp" style="width: 32px; height: 32px;" />
+  </a>
+</div>
