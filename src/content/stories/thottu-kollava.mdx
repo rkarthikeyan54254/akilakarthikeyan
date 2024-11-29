@@ -6,7 +6,8 @@ description: 'இன்னிக்கு என்ன டிபன் பண்
 featured: true
 genre: 'நகைச்சுவை'
 tags: ['சமூகம்', 'தொழில்நுட்பம்']
-image: '/images/akilakarthikeyan_profile.jpg'
+currentUrl: '/stories/thottu-kollava'
+image: '/images/thottu-kollava.jpeg'
 
 ---
 <figure>
@@ -18,7 +19,7 @@ image: '/images/akilakarthikeyan_profile.jpg'
   <div class="flex space-x-6 justify-start mt-4">
     {/* Facebook */}
     <a
-      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://akilakarthikeyan.com")}`}
+      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://akilakarthikeyan.com${frontmatter.currentUrl}`)}`}
       target="_blank"
       rel="noopener noreferrer"
       class="text-center"
@@ -33,7 +34,7 @@ image: '/images/akilakarthikeyan_profile.jpg'
 
     {/* Twitter */}
     <a
-      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent("https://akilakarthikeyan.com")}&text=${encodeURIComponent(frontmatter.title)}`}
+      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`https://akilakarthikeyan.com${frontmatter.currentUrl}`)}&text=${encodeURIComponent(frontmatter.title)}`}
       target="_blank"
       rel="noopener noreferrer"
       class="text-center"
@@ -48,7 +49,7 @@ image: '/images/akilakarthikeyan_profile.jpg'
 
     {/* WhatsApp */}
     <a
-      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://akilakarthikeyan.com`)}`}
+      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://akilakarthikeyan.com${frontmatter.currentUrl}`)}`}
       target="_blank"
       rel="noopener noreferrer"
       class="text-center"
@@ -61,20 +62,7 @@ image: '/images/akilakarthikeyan_profile.jpg'
       </div>
     </a>
 
-    {/* Instagram */}
-    <a
-      href="https://www.instagram.com/"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="text-center"
-    >
-      <div class="flex flex-col items-center">
-        <span class="text-pink-500 text-2xl">
-          <i class="fab fa-instagram"></i>
-        </span>
-        <span class="text-pink-500 hover:underline mt-1">Instagram</span>
-      </div>
-    </a>
+   
   </div>
 </div>
 ''இன்னிக்கு என்ன டிபன் பண்ணட்டும்?'' என்று ஒப்புக்காக கணவன்மார்களிடம் கேட்டுவிட்டு, ஏற்கனவே உத்தேசித்துள்ளதைத்தான் மனைவிமார்கள் செய்வார்களென்பது எல்லோரும் அறிந்ததே. அவர்களின் அன்றைய சாய்ஸாக இட்லியோ, தோசையோ, பொங்கலோ, உப்புமாவோ, அது எந்த தீனியாய் இருந்தாலும் அதை கணவர்மார்கள் திணித்துக் கொள்ளத்தான் போகிறோம். அப்படி சிரமப்பட்டு முழுங்கும் நிலையில் தயாரிக்கப்படும் சிற்றுண்டிகளுக்கு ஒத்தாசையாக உபஉண்டி எனப்படும் தொட்டுக்கொள்ளும் ஐட்டங்களையாவது உருப்படியாக செய்து கணவர்மார்களின் கஷ்டத்தைத் தீர்க்கிறார்களா என்றால் அதுவுமில்லை.

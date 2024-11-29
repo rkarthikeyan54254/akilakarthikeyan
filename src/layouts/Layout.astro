@@ -3,6 +3,7 @@ interface Props {
   title: string;
   description?: string;
   image?: string;
+  currentUrl?: string;
 }
 
 const { title = "Default Title", description, image } = Astro.props;  // Fallback value added for title
@@ -22,8 +23,10 @@ import MobileMenu from '../components/MobileMenu.astro';
 
 const canonicalURL = Astro.site ? new URL(Astro.url.pathname, Astro.site) : Astro.url.pathname;
 const imageURL = image ? (Astro.site ? new URL(image, Astro.site) : image) : '/default-image.jpg';
+const currentUrl = Astro.url.pathname; 
 console.log('Rendering Layout: ' + title);
-console.log('MDX Frontmatter:', Astro.props);  
+console.log('MDX Frontmatter:', Astro.props); 
+console.log('Astro.url.pathname:', Astro.url.pathname); 
 
 ---
 
@@ -31,7 +34,8 @@ console.log('MDX Frontmatter:', Astro.props);
 <html lang="ta">
   <head>
   <link
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+
   rel="stylesheet"
   />
     <meta charset="UTF-8" />
@@ -96,7 +100,7 @@ console.log('MDX Frontmatter:', Astro.props);
     <!-- Main Content Area (Slot for MDX Content) -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
       <!-- Inject MDX Content Here -->
-      <slot />
+      <slot currentUrl={Astro.url.pathname} />
     </main>
 
     <!-- Footer -->

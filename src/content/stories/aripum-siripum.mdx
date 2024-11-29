@@ -6,6 +6,7 @@ description: 'பாட்டன் முப்பாட்டன் என எ
 featured: true
 genre: 'நகைச்சுவை'
 tags: ['குடும்பம்', 'காதல்']
+currentUrl: '/stories/aripum-siripum'
 image: '/images/arippum-sirippum.jpeg'
 
 ---
@@ -18,7 +19,7 @@ image: '/images/arippum-sirippum.jpeg'
   <div class="flex space-x-6 justify-start mt-4">
     {/* Facebook */}
     <a
-      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://akilakarthikeyan.com")}`}
+      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://akilakarthikeyan.com${frontmatter.currentUrl}`)}`}
       target="_blank"
       rel="noopener noreferrer"
       class="text-center"
@@ -33,7 +34,7 @@ image: '/images/arippum-sirippum.jpeg'
 
     {/* Twitter */}
     <a
-      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent("https://akilakarthikeyan.com")}&text=${encodeURIComponent(frontmatter.title)}`}
+      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`https://akilakarthikeyan.com${frontmatter.currentUrl}`)}&text=${encodeURIComponent(frontmatter.title)}`}
       target="_blank"
       rel="noopener noreferrer"
       class="text-center"
@@ -48,7 +49,7 @@ image: '/images/arippum-sirippum.jpeg'
 
     {/* WhatsApp */}
     <a
-      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://akilakarthikeyan.com`)}`}
+      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://akilakarthikeyan.com${frontmatter.currentUrl}`)}`}
       target="_blank"
       rel="noopener noreferrer"
       class="text-center"
@@ -61,20 +62,7 @@ image: '/images/arippum-sirippum.jpeg'
       </div>
     </a>
 
-    {/* Instagram */}
-    <a
-      href="https://www.instagram.com/"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="text-center"
-    >
-      <div class="flex flex-col items-center">
-        <span class="text-pink-500 text-2xl">
-          <i class="fab fa-instagram"></i>
-        </span>
-        <span class="text-pink-500 hover:underline mt-1">Instagram</span>
-      </div>
-    </a>
+   
   </div>
 </div>
 பாட்டன் முப்பாட்டன் என எங்கள் வம்சத்தில் யாரும் எந்த சொத்தையும் எழுதி வைக்காத நிலையில் எங்கள் அண்ணன் தம்பிக்குள் சொத்து அபகரிப்பு என்ற வன்முறை தலைகாட்ட வழியில்லாமல் போனது. ஆனால் வழி வழியாக என் தாத்தா, அப்பா, என்று வம்சம்தோறும் தொடரும் சொத்தாக இந்த அபார அரிப்பு எல்லோருக்குமே சம அளவில் பகிர்ந்து கொடுக்கப்பட்டிருக்கும் நேர்மையை பாராட்டியே தீர வேண்டும்.

@@ -6,6 +6,7 @@ description: 'இது அக்மார்க் பக்திக் கட
 featured: false
 genre: 'ஆன்மீகம்'
 tags: ['சமூகம்', 'தொழில்நுட்பம்']
+currentUrl: '/stories/imsai-varungaal-naguga'
 image: '/images/imsai-varungaal.jpeg'
 
 ---
@@ -18,7 +19,7 @@ image: '/images/imsai-varungaal.jpeg'
   <div class="flex space-x-6 justify-start mt-4">
     {/* Facebook */}
     <a
-      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://akilakarthikeyan.com")}`}
+      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://akilakarthikeyan.com${frontmatter.currentUrl}`)}`}
       target="_blank"
       rel="noopener noreferrer"
       class="text-center"
@@ -33,7 +34,7 @@ image: '/images/imsai-varungaal.jpeg'
 
     {/* Twitter */}
     <a
-      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent("https://akilakarthikeyan.com")}&text=${encodeURIComponent(frontmatter.title)}`}
+      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`https://akilakarthikeyan.com${frontmatter.currentUrl}`)}&text=${encodeURIComponent(frontmatter.title)}`}
       target="_blank"
       rel="noopener noreferrer"
       class="text-center"
@@ -48,7 +49,7 @@ image: '/images/imsai-varungaal.jpeg'
 
     {/* WhatsApp */}
     <a
-      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://akilakarthikeyan.com`)}`}
+      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://akilakarthikeyan.com${frontmatter.currentUrl}`)}`}
       target="_blank"
       rel="noopener noreferrer"
       class="text-center"
@@ -61,20 +62,7 @@ image: '/images/imsai-varungaal.jpeg'
       </div>
     </a>
 
-    {/* Instagram */}
-    <a
-      href="https://www.instagram.com/"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="text-center"
-    >
-      <div class="flex flex-col items-center">
-        <span class="text-pink-500 text-2xl">
-          <i class="fab fa-instagram"></i>
-        </span>
-        <span class="text-pink-500 hover:underline mt-1">Instagram</span>
-      </div>
-    </a>
+   
   </div>
 </div>
 இது அக்மார்க் பக்திக் கட்டுரை! இதை உள்ளர்த்தம் வைத்து எழுதப்பட்ட நாத்திகக் கட்டுரை என்று யாரும் கணிப்பீடு செய்துவிட வேண்டாம் என்று கேட்டுக்கொள்ளப்படுகிறார்கள். எல்லாம் ஆண்டவன் செயல்.

@@ -6,6 +6,7 @@ description: 'வாட்ஸ்ஆப் குரூப்புகளில�
 featured: true
 genre: 'அனுபவம்'
 tags: ['குடும்பம்', 'காதல்']
+currentUrl: '/stories/chandrashtamam-sandhippu'
 image: '/images/chandrashtama.jpeg'
 
 ---
@@ -18,7 +19,7 @@ image: '/images/chandrashtama.jpeg'
   <div class="flex space-x-6 justify-start mt-4">
     {/* Facebook */}
     <a
-      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://akilakarthikeyan.com")}`}
+      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://akilakarthikeyan.com${frontmatter.currentUrl}`)}`}
       target="_blank"
       rel="noopener noreferrer"
       class="text-center"
@@ -33,7 +34,7 @@ image: '/images/chandrashtama.jpeg'
 
     {/* Twitter */}
     <a
-      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent("https://akilakarthikeyan.com")}&text=${encodeURIComponent(frontmatter.title)}`}
+      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`https://akilakarthikeyan.com${frontmatter.currentUrl}`)}&text=${encodeURIComponent(frontmatter.title)}`}
       target="_blank"
       rel="noopener noreferrer"
       class="text-center"
@@ -48,7 +49,7 @@ image: '/images/chandrashtama.jpeg'
 
     {/* WhatsApp */}
     <a
-      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://akilakarthikeyan.com`)}`}
+      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://akilakarthikeyan.com${frontmatter.currentUrl}`)}`}
       target="_blank"
       rel="noopener noreferrer"
       class="text-center"
@@ -61,20 +62,7 @@ image: '/images/chandrashtama.jpeg'
       </div>
     </a>
 
-    {/* Instagram */}
-    <a
-      href="https://www.instagram.com/"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="text-center"
-    >
-      <div class="flex flex-col items-center">
-        <span class="text-pink-500 text-2xl">
-          <i class="fab fa-instagram"></i>
-        </span>
-        <span class="text-pink-500 hover:underline mt-1">Instagram</span>
-      </div>
-    </a>
+   
   </div>
 </div>
 வாட்ஸ்ஆப் குரூப்புகளில் புதிதாக சேர்க்கப்படும் அல்லது வலு கட்டாயமாக அடம்பிடித்து நுழையும் சில ஜூனியர்கள் வந்த புதிதில் ஏதோ காணாததைக் கண்டுவிட்டவர்கள்போல சதா கண்டதையும் பக்கம் பக்கமாக மெசேஜ் செய்துக் கொண்டிருப்பார்கள்.

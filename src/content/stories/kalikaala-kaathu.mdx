@@ -6,6 +6,7 @@ description: 'கிருத, த்ரேதா, த்வாபர யுக�
 featured: false
 genre: 'நகைச்சுவை'
 tags: ['சமூகம்', 'தொழில்நுட்பம்']
+currentUrl: '/stories/kalikaala-kaathu'
 image: '/images/akilakarthikeyan_profile.jpg'
 
 ---
@@ -18,7 +19,7 @@ image: '/images/akilakarthikeyan_profile.jpg'
   <div class="flex space-x-6 justify-start mt-4">
     {/* Facebook */}
     <a
-      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://akilakarthikeyan.com")}`}
+      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://akilakarthikeyan.com${frontmatter.currentUrl}`)}`}
       target="_blank"
       rel="noopener noreferrer"
       class="text-center"
@@ -33,7 +34,7 @@ image: '/images/akilakarthikeyan_profile.jpg'
 
     {/* Twitter */}
     <a
-      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent("https://akilakarthikeyan.com")}&text=${encodeURIComponent(frontmatter.title)}`}
+      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`https://akilakarthikeyan.com${frontmatter.currentUrl}`)}&text=${encodeURIComponent(frontmatter.title)}`}
       target="_blank"
       rel="noopener noreferrer"
       class="text-center"
@@ -48,7 +49,7 @@ image: '/images/akilakarthikeyan_profile.jpg'
 
     {/* WhatsApp */}
     <a
-      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://akilakarthikeyan.com`)}`}
+      href={`https://wa.me/?text=${encodeURIComponent(`${frontmatter.title} - https://akilakarthikeyan.com${frontmatter.currentUrl}`)}`}
       target="_blank"
       rel="noopener noreferrer"
       class="text-center"
@@ -61,20 +62,7 @@ image: '/images/akilakarthikeyan_profile.jpg'
       </div>
     </a>
 
-    {/* Instagram */}
-    <a
-      href="https://www.instagram.com/"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="text-center"
-    >
-      <div class="flex flex-col items-center">
-        <span class="text-pink-500 text-2xl">
-          <i class="fab fa-instagram"></i>
-        </span>
-        <span class="text-pink-500 hover:underline mt-1">Instagram</span>
-      </div>
-    </a>
+   
   </div>
 </div>
 கிருத, த்ரேதா, த்வாபர யுகங்களில் இந்த காது எனும் செவி எந்த ரிஷியின் ரகசிய உபதேச மந்திரங்களை ஒட்டுகேட்டுத் தொலைத்து சாபம் வாங்கிக் கட்டிக் கொண்டதோ தெரியவில்லை. இந்த கலியுகத்தில் எல்லா யுவன் யுவதிகளாலும் அநேகமாக எல்லா நேரங்களிலும் அடைக்கப்பட்டு அவஸ்தைப்பட்டுக் கொண்டிருக்கிறது.

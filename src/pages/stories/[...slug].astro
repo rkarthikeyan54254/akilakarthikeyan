@@ -4,6 +4,8 @@ import { getCollection } from 'astro:content';
 
 export const prerender = true;
 
+const currentUrl = Astro.url.href;
+
 export async function getStaticPaths() {
   const stories = await getCollection('stories');
   return stories.map(story => ({
@@ -24,7 +26,8 @@ const formattedDate = new Date(story.data.publishDate).toLocaleDateString('ta-IN
 
 <Layout title={`${story.data.title} - அகிலா கார்த்திகேயன்`}
   description={story.data.description}
-  image={story.data.image}>
+  image={story.data.image}
+  currentUrl={currentUrl}>
 
   <article class="prose prose-lg mx-auto px-4">
     <h1 class="text-4xl font-bold text-gray-900 mb-4">{story.data.title}</h1>
@@ -38,7 +41,7 @@ const formattedDate = new Date(story.data.publishDate).toLocaleDateString('ta-IN
     </div>
 
     <div class="story-content mt-8">
-      <Content />
+      <Content currentUrl={currentUrl} />
     </div>
   </article>
 </Layout>
