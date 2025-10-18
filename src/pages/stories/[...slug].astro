@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import CommentSection from '../../components/CommentSection.astro';
 import { getCollection } from 'astro:content';
 
 export const prerender = true;
@@ -43,6 +44,8 @@ const formattedDate = new Date(story.data.publishDate).toLocaleDateString('ta-IN
     <div class="story-content mt-8">
       <Content currentUrl={currentUrl} />
     </div>
+
+    <CommentSection storySlug={story.slug} />
   </article>
 </Layout>
 

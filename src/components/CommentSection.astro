@@ -1,0 +1,93 @@
+---
+const { storySlug } = Astro.props;
+---
+
+<div class="comments-section mt-16 border-t pt-8">
+  <h2 class="text-2xl font-bold mb-6">கருத்துகள்</h2>
+
+  <form id="comment-form" class="mb-8 p-6 bg-gray-50 rounded-lg">
+    <div class="mb-4">
+      <label for="author_name" class="block text-sm font-medium mb-2">உங்கள் பெயர்</label>
+      <input
+        type="text"
+        id="author_name"
+        name="author_name"
+        required
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    <div class="mb-4">
+      <label for="content" class="block text-sm font-medium mb-2">உங்கள் கருத்து</label>
+      <textarea
+        id="content"
+        name="content"
+        rows="4"
+        required
+        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+      ></textarea>
+    </div>
+
+    <button
+      type="submit"
+      class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+    >
+      கருத்தை சமர்ப்பிக்கவும்
+    </button>
+    <p class="text-sm text-gray-600 mt-2">உங்கள் கருத்து அங்கீகரிக்கப்பட்ட பிறகு காண்பிக்கப்படும்</p>
+  </form>
+
+  <div id="comments-list" class="space-y-4">
+    <p class="text-gray-500">கருத்துகள் ஏற்றப்படுகின்றன...</p>
+  </div>
+</div>
+
+<script define:vars={{ storySlug }}>
+  async function loadComments() {
+    const response = await fetch(`/api/comments?story=${storySlug}`);
+    const comments = await response.json();
+
+    const list = document.getElementById('comments-list');
+
+    if (comments.length === 0) {
+      list.innerHTML = '<p class="text-gray-500">இதுவரை கருத்துகள் இல்லை</p>';
+      return;
+    }
+
+    list.innerHTML = comments.map(comment => `
+      <div class="p-4 bg-white border rounded-lg">
+        <div class="flex justify-between items-start mb-2">
+          <strong class="text-lg">${comment.author_name}</strong>
+          <time class="text-sm text-gray-500">${new Date(comment.created_at).toLocaleDateString('ta-IN')}</time>
+        </div>
+        <p class="text-gray-700">${comment.content}</p>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('comment-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+
+    const response = await fetch('/api/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        story_slug: storySlug,
+        author_name: formData.get('author_name'),
+        content: formData.get('content')
+      })
+    });
+
+    if (response.ok) {
+      alert('உங்கள் கருத்து சமர்ப்பிக்கப்பட்டது! அங்கீகரிக்கப்பட்ட பிறகு காண்பிக்கப்படும்.');
+      form.reset();
+    } else {
+      alert('பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.');
+    }
+  });
+
+  loadComments();
+</script>
