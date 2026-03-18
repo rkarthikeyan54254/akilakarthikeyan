@@ -51,6 +51,47 @@ const featuredStories = stories
     </div>
   </section>
 
+  <section class="mb-16 -mt-8 relative z-10">
+    <div class="max-w-2xl mx-auto">
+      <div class="bg-white p-2 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-2">
+        <div class="pl-4 text-gray-400">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <input 
+          type="text" 
+          id="home-search"
+          placeholder="கதைகளைத் தேடுங்கள்... (எ.கா: நகைச்சுவை, தீபாவளி)" 
+          class="w-full py-3 px-2 focus:outline-none text-lg text-gray-700"
+        />
+        <button 
+          id="home-search-btn"
+          class="bg-gray-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-800 transition-colors"
+        >
+          தேடு
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const searchBtn = document.getElementById('home-search-btn');
+    const searchInput = document.getElementById('home-search') as HTMLInputElement;
+
+    const handleSearch = () => {
+      const query = searchInput.value.trim();
+      if (query) {
+        window.location.href = `/stories?search=${encodeURIComponent(query)}`;
+      }
+    };
+
+    searchBtn?.addEventListener('click', handleSearch);
+    searchInput?.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleSearch();
+    });
+  </script>
+
   <section class="mb-12">
     <div class="flex items-center justify-between mb-8">
       <h2 class="text-2xl md:text-3xl font-bold text-gray-900">சிறப்பு கதைகள்</h2>

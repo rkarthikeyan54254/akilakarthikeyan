@@ -85,11 +85,11 @@ const imageURL = image ? (Astro.site ? new URL(image, Astro.site) : image) : '/d
           <NavDropdown type="stories" genres={genres} />
           <NavDropdown type="books" genres={genres} />
           <a href="/about" class="text-gray-600 hover:text-gray-900">பற்றி</a>
-          <CartButton />
+          {/* <CartButton /> */}
         </div>
 
         <div class="flex items-center gap-4 md:hidden">
-          <CartButton />
+          {/* <CartButton /> */}
           <button id="mobile-menu-button" class="text-gray-600 hover:text-gray-900" aria-label="Menu">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>

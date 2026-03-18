@@ -1,23 +1,91 @@
 ---
-// ShareButtons.astro
-export interface Props {
-  url: string;
+interface Props {
   title: string;
+  url: string;
 }
 
-const { url } = Astro.props;
-const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(`${title} - ${url}`)}`;
+const { title, url } = Astro.props;
+const encodedTitle = encodeURIComponent(title);
+const encodedUrl = encodeURIComponent(url);
+
+const socialLinks = [
+  {
+    name: 'WhatsApp',
+    icon: 'fa-whatsapp',
+    href: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
+    color: 'hover:bg-[#25D366] hover:text-white',
+    bg: 'bg-green-50 text-green-600'
+  },
+  {
+    name: 'Facebook',
+    icon: 'fa-facebook-f',
+    href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+    color: 'hover:bg-[#1877F2] hover:text-white',
+    bg: 'bg-blue-50 text-blue-600'
+  },
+  {
+    name: 'X (Twitter)',
+    icon: 'fa-x-twitter',
+    href: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
+    color: 'hover:bg-black hover:text-white',
+    bg: 'bg-gray-50 text-gray-900'
+  }
+];
 ---
 
-<div style="display: flex; gap: 10px; margin-top: 20px;">
-  <!-- Facebook Share Button -->
-  <a href={facebookShareUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">
-    <img src="/icons/facebook-icon.svg" alt="Facebook" style="width: 32px; height: 32px;" />
-  </a>
-
-  <!-- WhatsApp Share Button -->
-  <a href={whatsappShareUrl} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp">
-    <img src="/icons/whatsapp-icon.svg" alt="WhatsApp" style="width: 32px; height: 32px;" />
-  </a>
+<div class="my-12 py-8 border-y border-gray-100 bg-gray-50/50 rounded-2xl px-6">
+  <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+    <div>
+      <h3 class="text-xl font-bold text-gray-900 mb-1">இந்தக் கதை உங்களுக்குப் பிடித்திருக்கிறதா?</h3>
+      <p class="text-gray-600">உங்கள் நண்பர்களுடன் பகிர்ந்து அவர்களை மகிழ்வியுங்கள்!</p>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      {socialLinks.map(link => (
+        <a
+          href={link.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          class={`w-12 h-12 flex items-center justify-center rounded-full transition-all transform hover:scale-110 shadow-sm ${link.bg} ${link.color}`}
+          aria-label={`Share on ${link.name}`}
+        >
+          <i class={`fa-brands ${link.icon} text-xl`}></i>
+        </a>
+      ))}
+      
+      <button
+        id="copy-link-btn"
+        class="w-12 h-12 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all transform hover:scale-110 shadow-sm"
+        aria-label="Copy link"
+        data-url={url}
+      >
+        <i class="fa-solid fa-link text-lg"></i>
+      </button>
+    </div>
+  </div>
 </div>
+
+<script>
+  const copyBtn = document.getElementById('copy-link-btn');
+  
+  copyBtn?.addEventListener('click', async () => {
+    const url = copyBtn.getAttribute('data-url');
+    if (url) {
+      try {
+        await navigator.clipboard.writeText(url);
+        const originalIcon = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+        copyBtn.classList.remove('bg-gray-200');
+        copyBtn.classList.add('bg-green-500', 'text-white');
+        
+        setTimeout(() => {
+          copyBtn.innerHTML = originalIcon;
+          copyBtn.classList.remove('bg-green-500', 'text-white');
+          copyBtn.classList.add('bg-gray-200');
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+      }
+    }
+  });
+</script>

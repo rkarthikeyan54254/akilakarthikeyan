@@ -15,7 +15,18 @@ const genres = [...new Set(books.map(book => book.data.genre))];
 ---
 
 <Layout title="புத்தகங்கள் - அகிலா கார்த்திகேயன்">
-  <h1 class="text-3xl font-bold text-gray-900 mb-8">புத்தகங்கள்</h1>
+  <section class="text-center mb-12 bg-blue-50 p-8 rounded-2xl border border-blue-100">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">புத்தகங்கள்</h1>
+    <p class="text-lg text-gray-700 max-w-2xl mx-auto">
+      எமது புத்தகங்கள் தற்பொழுது ஆவணப்படுத்தப்பட்டு வருகின்றன. விரைவில் இந்தப் பகுதியில் அனைத்து புத்தகங்களையும் நீங்கள் காணலாம்.
+    </p>
+    <div class="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full font-medium text-sm">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      விரைவில் வெளியாகும்
+    </div>
+  </section>
   
   <SearchBar />
   <GenreFilter type="books" genres={genres} />
