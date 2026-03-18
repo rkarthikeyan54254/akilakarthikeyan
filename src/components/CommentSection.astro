@@ -71,14 +71,18 @@ const { storySlug } = Astro.props;
     const form = e.target;
     const formData = new FormData(form);
 
+    const payload = {
+      story_slug: storySlug,
+      author_name: formData.get('author_name'),
+      content: formData.get('content')
+    };
+
+    console.log('Sending comment payload:', payload);
+
     const response = await fetch('/api/comments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        story_slug: storySlug,
-        author_name: formData.get('author_name'),
-        content: formData.get('content')
-      })
+      body: JSON.stringify(payload)
     });
 
     if (response.ok) {

@@ -44,7 +44,7 @@ const genreDisplayNames = {
 <Layout title={`${genreDisplayNames[genre]} - அகிலா கார்த்திகேயன்`}>
   <h1 class="text-3xl font-bold text-gray-900 mb-8">{genreDisplayNames[genre]}</h1>
   
-  <GenreFilter currentGenre={genre} genres={genres} />
+  <GenreFilter type="books" currentGenre={genre} genres={genres} />
   
   <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
     {sortedBooks.map(book => (

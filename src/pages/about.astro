@@ -1,13 +1,66 @@
 ---
-import Layout from '../layouts/Layout.astro';  // Import your Layout component
+import Layout from '../layouts/Layout.astro';
 
-// Define the image path in the frontmatter
-const imagePath = '/images/about_author.jpg'; // Path to your image in the public folder
+const imagePath = '/images/akilakarthikeyan_profile.jpg';
+const email = 'akilakarthikeyan@gmail.com';
 ---
 
-<Layout title="அகிலா கார்த்திகேயன் - எழுத்தாளர்">
-  <div class="max-w-4xl mx-auto px-4 py-8">
-    <!-- Image rendering with alt text and styles -->
-    <img src={imagePath} alt="About the Author" class="w-full rounded-lg shadow-lg" />
+<Layout title="அகிலா கார்த்திகேயன் - பற்றி">
+  <div class="max-w-4xl mx-auto px-4 py-12 md:py-20">
+    <div class="flex flex-col items-center text-center mb-16">
+      <div class="relative w-48 h-48 md:w-64 md:h-64 mb-8">
+        <div class="absolute inset-0 bg-gray-200 rounded-full animate-pulse -z-10"></div>
+        <img 
+          src={imagePath} 
+          alt="அகிலா கார்த்திகேயன்" 
+          class="w-full h-full rounded-full object-cover border-8 border-white shadow-2xl"
+        />
+      </div>
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">அகிலா கார்த்திகேயன்</h1>
+      <div class="h-1 w-20 bg-gray-900 rounded-full mx-auto"></div>
+    </div>
+
+    <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed space-y-6">
+      <p>
+        அகத்தியான் பள்ளி திரு. சுப்ரமணிய அய்யர் - திருமதி. அஞ்சனாட்சி அம்மாள் தம்பதிகளின் பதினோராவது மைந்தனான கார்த்திகேயனாக பிறந்து அதற்குமேல் அவர்கள் பதினாறும் பெறாமலேயே பெருவாழ்வு பெற முற்றுப்புள்ளி வைத்தவர். பெற்றோர்களின் பாசம் பத்தாதென்று இவருக்கு முன் பிறந்த பத்து மூத்தவர்களின் அன்பும், பரிவையும் பெற்ற பாக்யசாலி.
+      </p>
+
+      <p>
+        அவர்களின் உபயத்தில் பொறியியல் பட்டம் பெற சென்றவருக்கு கலையியலில் மிகுந்த நாட்டம் இருந்ததால் ஒரு திறமையான பொறியாளரை நாடு இழக்க வேண்டியதானது. உருப்படியான பொறியாளராக இல்லாதபோதும் ஒரு அரசாங்க பொறியியல் துறையில் உயர் அதிகாரியாக குப்பைக் கொட்ட இவருக்கு கொடுத்து வைத்திருந்தது.
+      </p>
+
+      <p>
+        1979-களில் இவர் இப்படி குப்பைக் கொட்டிக் கொண்டிருந்த காலங்களில், இவருடன் வாழ்க்கையில் குப்பைக்கொட்ட இணைந்த தன் மனைவி அகிலாவின் பெயரையும் இணைத்துக்கொண்டு இவர் எழுத ஆரம்பித்ததில் இதுவரை இருநூறுக்கும் மேலான கதை, கட்டுரைகள் குப்பையாக நிராகரிக்கப்படாமல் பிரபல வார, மாத இதழ்களில் வாசகர்களை இம்சித்துள்ளன.
+      </p>
+
+      <div class="bg-gray-50 border-l-4 border-gray-900 p-6 my-8 rounded-r-lg italic">
+        "இதற்கு பிராயச்சித்தமாக நடமாடும் தெய்வமாம் ஸ்ரீஸ்ரீஸ்ரீ மஹா பெரியவாளின் மகிமைகளையும், ஸ்ரீ பிரதோஷ நாயன்மாரின் சரிதத்தையும் எழுத இவருக்கு பாக்யம் அருளப்பட்டுள்ளது."
+      </div>
+
+      <p>
+        திரு. கல்கி ராஜேந்திரன் மற்றும் கல்கி, மங்கையர் இதழ்களின் ஆசிரியர்கள் ஊக்கம் அளித்தும், இவருடைய வாசகர் வட்டம் திருமண இதழில் போடப்படும் சுற்றமும், நட்பும் என்ற சொற்ப வட்டத்தை விட்டு விரிவடையவில்லை.
+      </p>
+
+      <p>
+        திரு. பாக்யம் ராமசாமி, ரா.கி. ரங்கராஜன், சோ, ராமசாமி இவர்களின் ஏகலைவனாக இவர் எழுதிய அனைத்தும் நையாண்டி. ஹாஸ்யக் கதைகளே! பரிசு பெற்ற சீரியஸ் கதைகளையும் எழுதியிருக்கும் இவருடைய கதைகள் மூன்று தொகுப்பாக வெளிவந்துள்ளன.
+      </p>
+
+      <p class="font-medium text-gray-900">
+        அவைகளை வெளியே எந்த புத்தகக் கடைகளிலும் நீங்கள் போய் வாங்கிவிட முடியாது. அவர் வீட்டிற்கு வரும் விருந்தாளிகள், நண்பர்கள் தலையில் கட்ட மொத்தமாக அவைகளை அவர் வீட்டிலேயே பாதுகாத்து வைத்துக் கொண்டிருக்கிறார் ஜாக்கிரதை!
+      </p>
+    </div>
+
+    <div class="mt-20 pt-12 border-t border-gray-200 text-center">
+      <h3 class="text-xl font-bold text-gray-900 mb-6">தொடர்பு கொள்ள</h3>
+      <a 
+        href={`mailto:${email}`}
+        class="inline-flex items-center gap-3 px-8 py-4 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-all transform hover:scale-105 shadow-lg group"
+      >
+        <svg class="w-5 h-5 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+        </svg>
+        <span class="text-lg font-medium">{email}</span>
+      </a>
+    </div>
   </div>
 </Layout>

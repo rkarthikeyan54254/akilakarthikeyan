@@ -5,9 +5,10 @@ interface Props {
   url: string;
   publishDate: Date;
   genre: string;
+  image?: string;
 }
 
-const { title, description, url, publishDate, genre } = Astro.props;
+const { title, description, url, publishDate, genre, image } = Astro.props;
 const formattedDate = new Date(publishDate).toLocaleDateString('ta-IN', {
   year: 'numeric',
   month: 'long',
@@ -17,18 +18,27 @@ const formattedDate = new Date(publishDate).toLocaleDateString('ta-IN', {
 
 <a 
   href={url} 
-  class="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
+  class="block bg-white rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 overflow-hidden"
 >
+  {image && (
+    <div class="aspect-video w-full overflow-hidden">
+      <img 
+        src={image} 
+        alt={title} 
+        class="w-full h-full object-cover"
+      />
+    </div>
+  )}
   <div class="p-4 sm:p-6">
     <div class="flex items-center gap-2 mb-2">
-      <h2 class="text-xl sm:text-2xl font-bold text-gray-900 line-clamp-2">{title}</h2>
+      <h2 class="text-xl font-bold text-gray-900 line-clamp-2">{title}</h2>
     </div>
-    <p class="text-gray-600 mb-4 line-clamp-3">{description}</p>
-    <div class="flex flex-wrap items-center justify-between gap-2">
-      <time datetime={publishDate.toISOString()} class="text-sm text-gray-500">
+    <p class="text-gray-600 mb-4 line-clamp-2 text-sm">{description}</p>
+    <div class="flex flex-wrap items-center justify-between gap-2 mt-auto">
+      <time datetime={publishDate.toISOString()} class="text-xs text-gray-500">
         {formattedDate}
       </time>
-      <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
+      <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
         {genre}
       </span>
     </div>

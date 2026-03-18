@@ -11,24 +11,51 @@ const featuredStories = stories
 
 <Layout title="அகிலா கார்த்திகேயன் - எழுத்தாளர்">
 
-  <section class="text-center mb-12">
-  <img
-  src="/images/website-logo.jpeg"
-  alt="Website Logo"
-  class="h-auto w-auto sm:h-[value] sm:w-[value]" 
-  alt="Responsive Element" 
-  />
-    <h1 class="text-4xl font-bold text-gray-900 mb-4">
-      அகிலா கார்த்திகேயன் சிறுகதை தொகுப்பு மற்றும் புத்தகங்கள்
-    </h1>
-
-    <p class="text-xl text-gray-600 mb-8">
-      படிக்க ...சிரிக்க ....சிந்திக்க 
-    </p>
+  <section class="py-12 md:py-20">
+    <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
+      <div class="relative w-48 h-48 md:w-64 md:h-64 flex-shrink-0">
+        <div class="absolute inset-0 bg-gray-200 rounded-full animate-pulse -z-10"></div>
+        <img
+          src="/images/akilakarthikeyan_profile.jpg"
+          alt="அகிலா கார்த்திகேயன்"
+          class="w-full h-full object-cover rounded-full shadow-2xl border-8 border-white" 
+        />
+      </div>
+      <div class="flex-1 text-center md:text-left">
+        <h1 class="text-3xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+          அகிலா கார்த்திகேயன்
+        </h1>
+        <div class="space-y-4 text-lg md:text-xl text-gray-700 leading-relaxed">
+          <p class="font-semibold text-gray-900">
+            நகைச்சுவை தெறிக்கும் நையாண்டி; பக்தி மணம் கமழும் ஆன்மீகம்!
+          </p>
+          <p>
+            அரசுப்பணி தந்த அனுபவத்தையும், கல்கி முதல் மங்கையர் மலர் வரையிலான எழுத்துப் பயணத்தையும் இணைத்து, வாழ்வின் எதார்த்தங்களை நகைச்சுவையோடும் ஆன்மீகத்தோடும் ஆவணப்படுத்தும் அகிலா கார்த்திகேயனின் அதிகாரப்பூர்வத் தளம்.
+          </p>
+        </div>
+        <div class="mt-8 flex flex-wrap justify-center md:justify-start gap-4">
+          <a
+            href="/stories"
+            class="bg-gray-900 text-white px-8 py-3 rounded-full font-semibold hover:bg-gray-800 transition-all transform hover:scale-105 shadow-lg"
+          >
+            கதைகளை வாசிக்க
+          </a>
+          <a
+            href="/about"
+            class="bg-white text-gray-900 border-2 border-gray-200 px-8 py-3 rounded-full font-semibold hover:bg-gray-50 transition-all transform hover:scale-105 shadow-sm"
+          >
+            பற்றி அறிய
+          </a>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">சிறப்பு கதைகள்</h2>
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900">சிறப்பு கதைகள்</h2>
+      <a href="/stories" class="text-gray-600 hover:text-gray-900 font-medium">அனைத்தும் காண்க &rarr;</a>
+    </div>
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {featuredStories.map(story => (
         <StoryCard
@@ -37,6 +64,7 @@ const featuredStories = stories
           url={`/stories/${story.slug}`}
           publishDate={story.data.publishDate}
           genre={story.data.genre}
+          image={story.data.image}
         />
       ))}
     </div>

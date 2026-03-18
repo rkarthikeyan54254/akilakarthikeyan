@@ -18,7 +18,7 @@ const genres = [...new Set(books.map(book => book.data.genre))];
   <h1 class="text-3xl font-bold text-gray-900 mb-8">புத்தகங்கள்</h1>
   
   <SearchBar />
-  <GenreFilter genres={genres} />
+  <GenreFilter type="books" genres={genres} />
   
   <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
     {sortedBooks.map(book => (

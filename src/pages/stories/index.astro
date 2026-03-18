@@ -28,6 +28,7 @@ const genres = [...new Set(stories.map(story => story.data.genre))];
         url={`/stories/${story.slug}`}
         publishDate={story.data.publishDate}
         genre={story.data.genre}
+        image={story.data.image}
       />
     ))}
   </div>

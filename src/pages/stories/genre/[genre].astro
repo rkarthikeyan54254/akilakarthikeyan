@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import StoryCard from '../../../components/StoryCard.astro';
+import GenreFilter from '../../../components/GenreFilter.astro';
 import { getCollection } from 'astro:content';
 
 export const prerender = true;
@@ -37,6 +38,8 @@ const genreDisplayNames = {
 <Layout title={`${genreDisplayNames[genre]} - அகிலா கார்த்திகேயன்`}>
   <h1 class="text-3xl font-bold text-gray-900 mb-8">{genreDisplayNames[genre]}</h1>
   
+  <GenreFilter currentGenre={genre} genres={genres} />
+  
   <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
     {sortedStories.map(story => (
       <StoryCard
@@ -45,6 +48,7 @@ const genreDisplayNames = {
         url={`/stories/${story.slug}`}
         publishDate={story.data.publishDate}
         genre={story.data.genre}
+        image={story.data.image}
       />
     ))}
   </div>
