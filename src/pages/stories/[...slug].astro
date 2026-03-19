@@ -3,60 +3,103 @@ import Layout from '../../layouts/Layout.astro';
 import CommentSection from '../../components/CommentSection.astro';
 import ShareButton from '../../components/ShareButton.astro';
 import { getCollection } from 'astro:content';
+import { supabase } from '../../lib/supabase';
+import { marked } from 'marked';
 
-export const prerender = true;
+// This page must be SSR to handle dynamic slugs
+export const prerender = false;
 
+const { slug } = Astro.params;
 const currentUrl = Astro.url.href;
 
-export async function getStaticPaths() {
-  const stories = await getCollection('stories');
-  return stories.map(story => ({
-    params: { slug: story.slug },
-    props: { story },
-  }));
+let story = null;
+let Content = null;
+let isDynamic = false;
+
+// 1. Try to find in Static Collection
+const staticStories = await getCollection('stories');
+const staticStory = staticStories.find(s => s.slug === slug);
+
+if (staticStory) {
+  story = {
+    title: staticStory.data.title,
+    description: staticStory.data.description,
+    image: staticStory.data.image,
+    publishDate: staticStory.data.publishDate,
+    author: staticStory.data.author,
+    genre: staticStory.data.genre,
+    slug: staticStory.slug,
+    body: staticStory.body // Used for image check
+  };
+  const rendered = await staticStory.render();
+  Content = rendered.Content;
+} else {
+  // 2. Try to find in Supabase (Dynamic)
+  const { data: dynamicStory, error } = await supabase
+    .from('stories')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+
+  if (dynamicStory) {
+    story = {
+      title: dynamicStory.title,
+      description: dynamicStory.excerpt,
+      image: dynamicStory.image_url,
+      publishDate: new Date(dynamicStory.published_at),
+      author: dynamicStory.author,
+      genre: dynamicStory.genre,
+      slug: dynamicStory.slug,
+      body: dynamicStory.content
+    };
+    isDynamic = true;
+  }
 }
 
-const { story } = Astro.props;
-const { Content } = await story.render();
+// 3. 404 if not found
+if (!story) {
+  return Astro.redirect('/404');
+}
 
-// Check if content already contains the featured image to avoid duplication
-const hasFeaturedImageInContent = story.body.includes(story.data.image || '');
-
-const formattedDate = new Date(story.data.publishDate).toLocaleDateString('ta-IN', {
+const formattedDate = new Date(story.publishDate).toLocaleDateString('ta-IN', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
 });
+
+// Check if content already contains the featured image
+const hasFeaturedImageInContent = story.body.includes(story.image || '');
+const contentHtml = isDynamic ? marked.parse(story.body) : '';
 ---
 
-<Layout title={`${story.data.title} - அகிலா கார்த்திகேயன்`}
-  description={story.data.description}
-  image={story.data.image}
+<Layout title={`${story.title} - அகிலா கார்த்திகேயன்`}
+  description={story.description}
+  image={story.image}
   currentUrl={currentUrl}>
 
   <article class="prose prose-lg mx-auto px-4">
-    {story.data.image && !hasFeaturedImageInContent && (
+    {story.image && !hasFeaturedImageInContent && (
       <img 
-        src={story.data.image} 
-        alt={story.data.title} 
+        src={story.image} 
+        alt={story.title} 
         class="w-full rounded-xl shadow-lg mb-8"
       />
     )}
-    <h1 class="text-4xl font-bold text-gray-900 mb-4">{story.data.title}</h1>
+    <h1 class="text-4xl font-bold text-gray-900 mb-4">{story.title}</h1>
     
     <div class="flex items-center gap-4 text-gray-600 mb-8">
-      <time datetime={story.data.publishDate.toISOString()}>{formattedDate}</time>
-      <span>எழுதியவர்: {story.data.author}</span>
+      <time datetime={story.publishDate.toISOString()}>{formattedDate}</time>
+      <span>எழுதியவர்: {story.author}</span>
       <span class="px-3 py-1 bg-gray-100 rounded-full text-sm">
-        {story.data.genre}
+        {story.genre}
       </span>
     </div>
 
     <div class="story-content mt-8">
-      <Content currentUrl={currentUrl} />
+      {isDynamic ? <div set:html={contentHtml} /> : <Content currentUrl={currentUrl} />}
     </div>
 
-    <ShareButton title={story.data.title} url={currentUrl} />
+    <ShareButton title={story.title} url={currentUrl} />
 
     <CommentSection storySlug={story.slug} />
   </article>

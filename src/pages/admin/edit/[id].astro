@@ -1,0 +1,235 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const { id } = Astro.params;
+const genres = ['நகைச்சுவை', 'நாடகம்', 'ஆன்மீகம்', 'சமூகம்', 'அனுபவம்', 'குடும்பம்'];
+---
+
+<Layout title="Edit Story - Admin">
+  <div class="max-w-4xl mx-auto px-4 py-8" id="admin-panel" style="display: none;">
+    <div class="mb-8">
+      <a href="/admin" class="text-gray-600 hover:text-gray-900 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        Back to Dashboard
+      </a>
+    </div>
+
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">Edit Story</h1>
+      <button id="delete-btn" class="text-red-600 hover:text-red-800 font-medium flex items-center gap-2 border border-red-200 px-4 py-2 rounded-lg hover:bg-red-50 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        Delete Story
+      </button>
+    </div>
+
+    <div id="loading" class="text-center py-12 text-gray-500">Loading story details...</div>
+
+    <form id="edit-story-form" class="space-y-6 bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-100 hidden">
+      <input type="hidden" id="story-id" value={id}>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+          <input type="text" id="title" name="title" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border">
+        </div>
+
+        <div>
+          <label for="genre" class="block text-sm font-medium text-gray-700">Genre</label>
+          <select id="genre" name="genre" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border">
+            {genres.map(g => <option value={g}>{g}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label for="slug" class="block text-sm font-medium text-gray-700">Slug (URL)</label>
+          <input type="text" id="slug" name="slug" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border bg-gray-50">
+          <p class="text-xs text-gray-500 mt-1">Warning: Changing this will break existing links to this story.</p>
+        </div>
+
+        <div>
+          <label for="published_at" class="block text-sm font-medium text-gray-700">Published Date</label>
+          <input type="date" id="published_at" name="published_at" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border">
+        </div>
+      </div>
+
+      <div>
+        <label for="excerpt" class="block text-sm font-medium text-gray-700">Excerpt / Description</label>
+        <textarea id="excerpt" name="excerpt" rows="3" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border"></textarea>
+      </div>
+
+      <div>
+        <label for="image" class="block text-sm font-medium text-gray-700">Featured Image</label>
+        <div class="flex items-center gap-4">
+          <input type="file" id="image" name="image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100">
+          <input type="hidden" id="current-image-url">
+        </div>
+        <div id="image-preview" class="mt-4 hidden">
+          <p class="text-xs text-gray-500 mb-2">Current Image:</p>
+          <img src="" alt="Preview" class="h-48 w-auto rounded-lg object-cover">
+        </div>
+      </div>
+
+      <div>
+        <label for="content" class="block text-sm font-medium text-gray-700">Content (Markdown supported)</label>
+        <textarea id="content" name="content" rows="15" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border font-mono"></textarea>
+      </div>
+
+      <div class="flex justify-end pt-4">
+        <button type="submit" id="submit-btn" class="bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition shadow-lg transform hover:scale-105">
+          Update Story
+        </button>
+      </div>
+    </form>
+  </div>
+</Layout>
+
+<script>
+  import { supabase } from '../../../lib/supabase';
+
+  const storyId = document.getElementById('story-id') as HTMLInputElement;
+  const form = document.getElementById('edit-story-form');
+  const loadingDiv = document.getElementById('loading');
+
+  // Auth Check & Load Data
+  const init = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = '/admin/login';
+      return;
+    }
+    
+    document.getElementById('admin-panel').style.display = 'block';
+    
+    if (storyId && storyId.value) {
+      const { data: story, error } = await supabase
+        .from('stories')
+        .select('*')
+        .eq('id', storyId.value)
+        .single();
+
+      if (error || !story) {
+        alert('Error loading story');
+        window.location.href = '/admin';
+        return;
+      }
+
+      // Populate Form
+      (document.getElementById('title') as HTMLInputElement).value = story.title;
+      (document.getElementById('slug') as HTMLInputElement).value = story.slug;
+      (document.getElementById('genre') as HTMLSelectElement).value = story.genre;
+      (document.getElementById('published_at') as HTMLInputElement).value = story.published_at ? new Date(story.published_at).toISOString().split('T')[0] : '';
+      (document.getElementById('excerpt') as HTMLTextAreaElement).value = story.excerpt || '';
+      (document.getElementById('content') as HTMLTextAreaElement).value = story.content;
+      (document.getElementById('current-image-url') as HTMLInputElement).value = story.image_url || '';
+
+      if (story.image_url) {
+        const preview = document.getElementById('image-preview');
+        const img = preview?.querySelector('img');
+        if (preview && img) {
+          img.src = story.image_url;
+          preview.classList.remove('hidden');
+        }
+      }
+
+      loadingDiv?.classList.add('hidden');
+      form?.classList.remove('hidden');
+    }
+  };
+
+  init();
+
+  // Delete Story
+  document.getElementById('delete-btn')?.addEventListener('click', async () => {
+    if (confirm('Are you sure you want to delete this story? This action cannot be undone.')) {
+      const { error } = await supabase
+        .from('stories')
+        .delete()
+        .eq('id', storyId.value);
+
+      if (error) {
+        alert('Error deleting story: ' + error.message);
+      } else {
+        alert('Story deleted successfully');
+        window.location.href = '/admin';
+      }
+    }
+  });
+
+  // Image Preview for New Upload
+  const imageInput = document.getElementById('image') as HTMLInputElement;
+  const imagePreview = document.getElementById('image-preview');
+  const previewImg = imagePreview?.querySelector('img');
+
+  imageInput?.addEventListener('change', () => {
+    const file = imageInput.files?.[0];
+    if (file && imagePreview && previewImg) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImg.src = e.target?.result as string;
+        imagePreview.classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Form Submission (Update)
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!submitBtn) return;
+    
+    const originalBtnText = submitBtn.innerText;
+    submitBtn.innerText = 'Updating...';
+    submitBtn.disabled = true;
+
+    try {
+      const formData = new FormData(e.target as HTMLFormElement);
+      const imageFile = formData.get('image') as File;
+      let imageUrl = (document.getElementById('current-image-url') as HTMLInputElement).value;
+
+      // 1. Upload New Image (if selected)
+      if (imageFile && imageFile.size > 0) {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const { data, error: uploadError } = await supabase.storage
+          .from('story-images')
+          .upload(fileName, imageFile);
+
+        if (uploadError) throw uploadError;
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('story-images')
+          .getPublicUrl(fileName);
+          
+        imageUrl = publicUrl;
+      }
+
+      // 2. Update Story
+      const { error: updateError } = await supabase
+        .from('stories')
+        .update({
+          title: formData.get('title'),
+          slug: formData.get('slug'), // Update the slug!
+          genre: formData.get('genre'),
+          excerpt: formData.get('excerpt'),
+          content: formData.get('content'),
+          published_at: formData.get('published_at'), // Update published date
+          image_url: imageUrl
+        })
+        .eq('id', storyId.value);
+
+      if (updateError) throw updateError;
+
+      alert('Story updated successfully!');
+      window.location.href = '/admin';
+
+    } catch (error: any) {
+      alert('Error: ' + error.message);
+      submitBtn.innerText = originalBtnText;
+      submitBtn.disabled = false;
+    }
+  });
+</script>

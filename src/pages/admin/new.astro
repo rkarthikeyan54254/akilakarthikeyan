@@ -1,0 +1,189 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const genres = ['நகைச்சுவை', 'நாடகம்', 'ஆன்மீகம்', 'சமூகம்', 'அனுபவம்', 'குடும்பம்'];
+---
+
+<Layout title="New Story - Admin">
+  <div class="max-w-4xl mx-auto px-4 py-8" id="admin-panel" style="display: none;">
+    <div class="mb-8">
+      <a href="/admin" class="text-gray-600 hover:text-gray-900 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        Back to Dashboard
+      </a>
+    </div>
+
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">Create New Story</h1>
+
+    <form id="create-story-form" class="space-y-6 bg-white p-6 md:p-8 rounded-xl shadow-sm border border-gray-100">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+          <input type="text" id="title" name="title" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border">
+        </div>
+
+        <div>
+          <label for="genre" class="block text-sm font-medium text-gray-700">Genre</label>
+          <select id="genre" name="genre" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border">
+            {genres.map(g => <option value={g}>{g}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label for="slug" class="block text-sm font-medium text-gray-700">Slug (URL)</label>
+          <input type="text" id="slug" name="slug" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border bg-gray-50" readonly>
+          <p class="text-xs text-gray-500 mt-1">Auto-generated from title</p>
+        </div>
+
+        <div>
+          <label for="published_at" class="block text-sm font-medium text-gray-700">Published Date</label>
+          <input type="date" id="published_at" name="published_at" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border">
+        </div>
+      </div>
+
+      <div>
+        <label for="excerpt" class="block text-sm font-medium text-gray-700">Excerpt / Description</label>
+        <textarea id="excerpt" name="excerpt" rows="3" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border"></textarea>
+      </div>
+
+      <div>
+        <label for="image" class="block text-sm font-medium text-gray-700">Featured Image</label>
+        <input type="file" id="image" name="image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100">
+        <div id="image-preview" class="mt-4 hidden">
+          <img src="" alt="Preview" class="h-48 w-auto rounded-lg object-cover">
+        </div>
+      </div>
+
+      <div>
+        <label for="content" class="block text-sm font-medium text-gray-700">Content (Markdown supported)</label>
+        <textarea id="content" name="content" rows="15" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border font-mono"></textarea>
+      </div>
+
+      <div class="flex justify-end pt-4">
+        <button type="submit" id="submit-btn" class="bg-gray-900 text-white px-8 py-3 rounded-lg hover:bg-gray-800 transition shadow-lg transform hover:scale-105">
+          Publish Story
+        </button>
+      </div>
+    </form>
+  </div>
+</Layout>
+
+<script>
+  import { supabase } from '../../lib/supabase';
+
+  // Auth Check
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = '/admin/login';
+    } else {
+      document.getElementById('admin-panel').style.display = 'block';
+    }
+  };
+  checkAuth();
+
+  // Auto-generate Slug
+  const titleInput = document.getElementById('title') as HTMLInputElement;
+  const slugInput = document.getElementById('slug') as HTMLInputElement;
+
+  titleInput?.addEventListener('input', () => {
+    const slug = titleInput.value
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '') // Remove non-word chars (Tamil chars might be removed here, need to be careful. Better to use a dedicated slugify for Tamil if needed, or manual input)
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+    
+    // For Tamil titles, simple slugify might fail. Let's allow manual edit if needed, or use a timestamp fallback.
+    // Actually, let's keep it editable but auto-fill if empty.
+    if(slug.length > 0) {
+        slugInput.value = slug;
+    } else {
+        // Fallback for non-latin scripts: timestamp
+        slugInput.value = `story-${Date.now()}`;
+    }
+  });
+  
+  // Allow manual override
+  slugInput.removeAttribute('readonly');
+
+
+  // Image Preview
+  const imageInput = document.getElementById('image') as HTMLInputElement;
+  const imagePreview = document.getElementById('image-preview');
+  const previewImg = imagePreview?.querySelector('img');
+
+  imageInput?.addEventListener('change', () => {
+    const file = imageInput.files?.[0];
+    if (file && imagePreview && previewImg) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImg.src = e.target?.result as string;
+        imagePreview.classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Form Submission
+  const form = document.getElementById('create-story-form');
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!submitBtn) return;
+    
+    const originalBtnText = submitBtn.innerText;
+    submitBtn.innerText = 'Publishing...';
+    submitBtn.disabled = true;
+
+    try {
+      const formData = new FormData(e.target as HTMLFormElement);
+      const imageFile = formData.get('image') as File;
+      let imageUrl = null;
+
+      // 1. Upload Image
+      if (imageFile && imageFile.size > 0) {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const { data, error: uploadError } = await supabase.storage
+          .from('story-images')
+          .upload(fileName, imageFile);
+
+        if (uploadError) throw uploadError;
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('story-images')
+          .getPublicUrl(fileName);
+          
+        imageUrl = publicUrl;
+      }
+
+      // 2. Insert Story
+      const { error: insertError } = await supabase
+        .from('stories')
+        .insert([{
+          title: formData.get('title'),
+          slug: formData.get('slug'),
+          genre: formData.get('genre'),
+          excerpt: formData.get('excerpt'),
+          content: formData.get('content'),
+          published_at: formData.get('published_at'), // Add published date
+          image_url: imageUrl,
+          author: 'அகிலா கார்த்திகேயன்' // Default or fetch from profile
+        }]);
+
+      if (insertError) throw insertError;
+
+      alert('Story published successfully!');
+      window.location.href = '/admin';
+
+    } catch (error: any) {
+      alert('Error: ' + error.message);
+      submitBtn.innerText = originalBtnText;
+      submitBtn.disabled = false;
+    }
+  });
+</script>

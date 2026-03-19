@@ -4,14 +4,55 @@ import StoryCard from '../../components/StoryCard.astro';
 import GenreFilter from '../../components/GenreFilter.astro';
 import SearchBar from '../../components/SearchBar.astro';
 import { getCollection } from 'astro:content';
+import { supabase } from '../../lib/supabase';
 
-const stories = await getCollection('stories');
-const sortedStories = stories.sort((a, b) => 
-  b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
-);
+// 1. Fetch Static Stories
+const staticStories = await getCollection('stories');
+const formattedStaticStories = staticStories.map(s => ({
+  title: s.data.title,
+  description: s.data.description,
+  slug: s.slug,
+  publishDate: s.data.publishDate,
+  genre: s.data.genre,
+  image: s.data.image,
+  isDynamic: false
+}));
+
+// 2. Fetch Dynamic Stories from Supabase
+let dynamicStories = [];
+try {
+  const { data, error } = await supabase
+    .from('stories')
+    .select('*')
+    .order('published_at', { ascending: false });
+  
+  if (!error && data) {
+    dynamicStories = data.map(s => ({
+      title: s.title,
+      description: s.excerpt || '',
+      slug: s.slug,
+      publishDate: new Date(s.published_at),
+      genre: s.genre,
+      image: s.image_url,
+      isDynamic: true
+    }));
+  }
+} catch (e) {
+  console.error("Error fetching dynamic stories:", e);
+}
+
+// 3. Merge and Sort
+const allStories = [...formattedStaticStories, ...dynamicStories]
+  .sort((a, b) => b.publishDate.valueOf() - a.publishDate.valueOf());
+
+// Handle Search
+const search = Astro.url.searchParams.get('search')?.toLowerCase();
+const filteredStories = search 
+  ? allStories.filter(s => s.title.toLowerCase().includes(search) || s.description.toLowerCase().includes(search))
+  : allStories;
 
 // Get unique genres
-const genres = [...new Set(stories.map(story => story.data.genre))];
+const genres = [...new Set(allStories.map(story => story.genre))];
 ---
 
 <Layout title="கதைகள் - அகிலா கார்த்திகேயன்">
@@ -21,14 +62,14 @@ const genres = [...new Set(stories.map(story => story.data.genre))];
   <GenreFilter genres={genres} />
   
   <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-    {sortedStories.map(story => (
+    {filteredStories.map(story => (
       <StoryCard
-        title={story.data.title}
-        description={story.data.description}
+        title={story.title}
+        description={story.description}
         url={`/stories/${story.slug}`}
-        publishDate={story.data.publishDate}
-        genre={story.data.genre}
-        image={story.data.image}
+        publishDate={story.publishDate}
+        genre={story.genre}
+        image={story.image}
       />
     ))}
   </div>

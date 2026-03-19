@@ -1,120 +1,92 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getCollection } from 'astro:content';
-// import { getComments } from '../../lib/_comments';
-
-// Check authentication
-if (!Astro.cookies.has('admin_token')) {
-  return Astro.redirect('/admin/login');
-}
-
-const stories = await getCollection('stories');
-const allComments = await Promise.all(
-  stories.map(async (story) => ({
-    story,
-    comments: await getComments(story.slug)
-  }))
-);
 ---
 
-<Layout title="Admin Dashboard">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="flex justify-between items-center mb-8">
-      <h1 class="text-3xl font-bold">நிர்வாக பலகை</h1>
-      <button
-        id="logout-btn"
-        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-      >
-        வெளியேறு
-      </button>
+<Layout title="Admin Dashboard - அகிலா கார்த்திகேயன்">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" id="admin-panel" style="display: none;">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+      <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+      <div class="flex gap-4">
+        <a href="/admin/new" class="bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition">
+          Add New Story
+        </a>
+        <button id="logout-btn" class="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition">
+          Logout
+        </button>
+      </div>
     </div>
 
-    <div class="grid gap-8 md:grid-cols-2">
-      <!-- Stories Management -->
-      <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-xl font-bold mb-4">கதைகள்</h2>
-        <div class="space-y-4">
-          {stories.map(story => (
-            <div class="flex justify-between items-center p-4 bg-gray-50 rounded">
-              <span>{story.data.title}</span>
-              <button
-                class="edit-story-btn px-3 py-1 bg-gray-900 text-white rounded hover:bg-gray-700"
-                data-slug={story.slug}
-              >
-                திருத்து
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <!-- Comments Management -->
-      <div class="bg-white p-6 rounded-lg shadow">
-        <h2 class="text-xl font-bold mb-4">கருத்துகள்</h2>
-        <div class="space-y-4">
-          {allComments.map(({ story, comments }) => (
-            <div class="border-b pb-4 last:border-0">
-              <h3 class="font-medium mb-2">{story.data.title}</h3>
-              {comments.map(comment => (
-                <div class="flex justify-between items-center p-4 bg-gray-50 rounded mb-2">
-                  <div>
-                    <p class="font-medium">{comment.name}</p>
-                    <p class="text-sm text-gray-600">{comment.comment}</p>
-                  </div>
-                  <button
-                    class="delete-comment-btn text-red-600 hover:text-red-800"
-                    data-id={comment.id}
-                  >
-                    நீக்கு
-                  </button>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+      <ul id="story-list" class="divide-y divide-gray-200">
+        <!-- Stories will be loaded here -->
+        <li class="px-4 py-4 sm:px-6 text-center text-gray-500">Loading stories...</li>
+      </ul>
     </div>
   </div>
 </Layout>
 
 <script>
-// Handle logout
-document.getElementById('logout-btn')?.addEventListener('click', () => {
-  document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
-  window.location.href = '/admin/login';
-});
+  import { supabase } from '../../lib/supabase';
 
-// Handle comment deletion
-document.querySelectorAll('.delete-comment-btn').forEach(button => {
-  button.addEventListener('click', async () => {
-    if (!confirm('இந்த கருத்தை நீக்க விரும்புகிறீர்களா?')) return;
-
-    const commentId = button.getAttribute('data-id');
-    
-    try {
-      const response = await fetch(`/api/admin/comments/${commentId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${document.cookie.match(/admin_token=([^;]+)/)?.[1]}`
-        }
-      });
-
-      if (!response.ok) throw new Error('Failed to delete comment');
-      
-      // Remove comment from DOM
-      button.closest('.flex')?.remove();
-      
-    } catch (error) {
-      alert('கருத்தை நீக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.');
+  // Auth Check
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = '/admin/login';
+    } else {
+      document.getElementById('admin-panel').style.display = 'block';
+      loadStories();
     }
-  });
-});
+  };
 
-// Handle story editing
-document.querySelectorAll('.edit-story-btn').forEach(button => {
-  button.addEventListener('click', () => {
-    const slug = button.getAttribute('data-slug');
-    window.location.href = `/admin/stories/${slug}/edit`;
+  checkAuth();
+
+  // Logout
+  document.getElementById('logout-btn')?.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/admin/login';
   });
-});
+
+  // Load Stories
+  async function loadStories() {
+    const { data: stories, error } = await supabase
+      .from('stories')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    const list = document.getElementById('story-list');
+    if (!list) return;
+
+    if (error) {
+      list.innerHTML = `<li class="px-4 py-4 text-red-500">Error loading stories: ${error.message}</li>`;
+      return;
+    }
+
+    if (stories.length === 0) {
+      list.innerHTML = `<li class="px-4 py-4 text-gray-500 text-center">No stories found. Create one!</li>`;
+      return;
+    }
+
+    list.innerHTML = stories.map(story => `
+      <li class="px-4 py-4 sm:px-6 hover:bg-gray-50 transition">
+        <div class="flex items-center justify-between">
+          <div class="flex-1 min-w-0">
+            <h3 class="text-lg font-medium text-gray-900 truncate">${story.title}</h3>
+            <p class="text-sm text-gray-500 flex gap-2">
+              <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-xs">${story.genre}</span>
+              <span>${new Date(story.published_at).toLocaleDateString()}</span>
+            </p>
+          </div>
+          <div class="flex gap-2">
+            <a href="/stories/${story.slug}" target="_blank" class="text-gray-400 hover:text-gray-600" title="View Story">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+            </a>
+            <a href="/admin/edit/${story.id}" class="text-blue-600 hover:text-blue-800" title="Edit Story">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            </a>
+          </div>
+        </div>
+      </li>
+    `).join('');
+  }
 </script>
