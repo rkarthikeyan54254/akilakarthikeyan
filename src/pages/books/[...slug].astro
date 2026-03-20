@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import AddToCartButton from '../../components/AddToCartButton.astro';
+import ShareButton from '../../components/ShareButton.astro';
 
 // Enable static pre-rendering
 export const prerender = true;
@@ -28,9 +29,16 @@ const formattedDate = book.data.publishDate.toLocaleDateString('ta-IN', {
   month: 'long',
   day: 'numeric',
 });
+
+const currentUrl = Astro.url.href;
 ---
 
-<Layout title={`${book.data.title} - அகிலா கார்த்திகேயன்`}>
+<Layout 
+  title={`${book.data.title} - அகிலா கார்த்திகேயன்`}
+  description={book.data.description}
+  image={book.data.coverImage}
+  currentUrl={currentUrl}
+>
   <div class="max-w-4xl mx-auto px-4">
     <div class="grid md:grid-cols-2 gap-8">
       <div>
@@ -56,8 +64,16 @@ const formattedDate = book.data.publishDate.toLocaleDateString('ta-IN', {
 
         <AddToCartButton book={book} />
 
-        <div class="prose prose-lg mt-8">
+        <div class="prose prose-lg mt-8 mb-12">
           <Content />
+        </div>
+
+        <div class="mt-8 pt-8 border-t border-gray-100">
+          <ShareButton 
+            title={book.data.title} 
+            url={currentUrl} 
+            description={book.data.description} 
+          />
         </div>
       </div>
     </div>

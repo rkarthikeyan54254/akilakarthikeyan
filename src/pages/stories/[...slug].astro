@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import CommentSection from '../../components/CommentSection.astro';
 import ShareButton from '../../components/ShareButton.astro';
+import StoryCard from '../../components/StoryCard.astro';
 import { getCollection } from 'astro:content';
 import { supabase } from '../../lib/supabase';
 import { marked } from 'marked';
@@ -29,7 +30,8 @@ if (staticStory) {
     author: staticStory.data.author,
     genre: staticStory.data.genre,
     slug: staticStory.slug,
-    body: staticStory.body // Used for image check
+    body: staticStory.body, // Used for image check
+    audio_url: (staticStory.data as any).audio_url
   };
   const rendered = await staticStory.render();
   Content = rendered.Content;
@@ -50,14 +52,32 @@ if (staticStory) {
       author: dynamicStory.author,
       genre: dynamicStory.genre,
       slug: dynamicStory.slug,
-      body: dynamicStory.content
+      body: dynamicStory.content,
+      audio_url: dynamicStory.audio_url
     };
     isDynamic = true;
   }
 }
 
-// 3. 404 if not found
+// 404 or Redirect if not found
 if (!story) {
+  // Check for known old Tamil slugs and redirect to new Latin ones
+  const redirectMap: Record<string, string> = {
+    'பொய்யும்-மெய்யும்': 'poiyum-meiyum',
+    'கோவிந்தனும்-கொரோனாவும்': 'govindhanum-coranavum',
+    'உஞ்சவிர்த்தி-எனும்-உன்னதம்': 'unjavarthi-enum-unnadham',
+    'உயிர்கொண்டு-போம்பொழுது': 'uyirkondu-pogumpothu',
+    'அமேசான்-காட்டில்-குணாவும்-ட்ரம்பும்': 'amazon-kaatil-gunavum-trumpum'
+  };
+
+  // The slug might be URL-encoded, so we should check both
+  const decodedSlug = decodeURIComponent(slug || '');
+  const newSlug = redirectMap[decodedSlug] || redirectMap[slug || ''];
+
+  if (newSlug) {
+    return Astro.redirect(`/stories/${newSlug}`, 301);
+  }
+
   return Astro.redirect('/404');
 }
 
@@ -67,9 +87,62 @@ const formattedDate = new Date(story.publishDate).toLocaleDateString('ta-IN', {
   day: 'numeric',
 });
 
+// Reading Time Calculation (approx 200 words per minute)
+const words = story?.body.split(/\s+/).length || 0;
+const readingTime = Math.max(1, Math.ceil(words / 200));
+
 // Check if content already contains the featured image
 const hasFeaturedImageInContent = story.body.includes(story.image || '');
 const contentHtml = isDynamic ? marked.parse(story.body) : '';
+
+// --- FETCH RELATED STORIES ---
+// 1. Static related
+const staticRelated = staticStories
+  .filter(s => s.slug !== story.slug && s.data.genre === story.genre)
+  .map(s => {
+    const w = s.body.split(/\s+/).length || 0;
+    return {
+      title: s.data.title,
+      description: s.data.description,
+      slug: s.slug,
+      publishDate: s.data.publishDate,
+      genre: s.data.genre,
+      image: s.data.image,
+      readingTime: Math.max(1, Math.ceil(w / 200)),
+      hasAudio: !!(s.data as any).audio_url
+    }
+  });
+
+// 2. Dynamic related (simplified - just fetch a few from same genre)
+let dynamicRelated = [];
+try {
+  const { data } = await supabase
+    .from('stories')
+    .select('*')
+    .eq('genre', story.genre)
+    .neq('slug', story.slug)
+    .limit(3);
+  
+  if (data) {
+    dynamicRelated = data.map(s => {
+      const w = s.content.split(/\s+/).length || 0;
+      return {
+        title: s.title,
+        description: s.excerpt || '',
+        slug: s.slug,
+        publishDate: new Date(s.published_at),
+        genre: s.genre,
+        image: s.image_url,
+        readingTime: Math.max(1, Math.ceil(w / 200)),
+        hasAudio: !!s.audio_url
+      }
+    });
+  }
+} catch (e) {}
+
+const allRelated = [...staticRelated, ...dynamicRelated]
+  .sort(() => Math.random() - 0.5) // Randomize
+  .slice(0, 3); // Take top 3
 ---
 
 <Layout title={`${story.title} - அகிலா கார்த்திகேயன்`}
@@ -77,43 +150,94 @@ const contentHtml = isDynamic ? marked.parse(story.body) : '';
   image={story.image}
   currentUrl={currentUrl}>
 
-  <article class="prose prose-lg mx-auto px-4">
-    {story.image && !hasFeaturedImageInContent && (
-      <img 
-        src={story.image} 
-        alt={story.title} 
-        class="w-full rounded-xl shadow-lg mb-8"
-      />
-    )}
-    <h1 class="text-4xl font-bold text-gray-900 mb-4">{story.title}</h1>
-    
-    <div class="flex items-center gap-4 text-gray-600 mb-8">
-      <time datetime={story.publishDate.toISOString()}>{formattedDate}</time>
-      <span>எழுதியவர்: {story.author}</span>
-      <span class="px-3 py-1 bg-gray-100 rounded-full text-sm">
-        {story.genre}
-      </span>
-    </div>
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Back Navigation -->
+    <nav class="mb-8">
+      <a href="/stories" class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium transition-colors group">
+        <i class="fa-solid fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+        மீண்டும் கதைகள் பக்கத்திற்கு
+      </a>
+    </nav>
 
-    <div class="story-content mt-8">
-      {isDynamic ? <div set:html={contentHtml} /> : <Content currentUrl={currentUrl} />}
-    </div>
+    <article class="prose prose-lg mx-auto">
+      {story.image && !hasFeaturedImageInContent && (
+        <img 
+          src={story.image} 
+          alt={story.title} 
+          class="w-full rounded-2xl shadow-xl mb-10 object-cover max-h-[500px]"
+        />
+      )}
+      
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">{story.title}</h1>
+      
+      <div class="flex flex-wrap items-center gap-4 text-gray-600 mb-8 pb-6 border-b border-gray-100">
+        <time datetime={story.publishDate.toISOString()}>{formattedDate}</time>
+        <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+        <span>எழுதியவர்: {story.author}</span>
+        <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+        <span class="flex items-center gap-1.5">
+          <i class="fa-regular fa-clock"></i>
+          {readingTime} நிமிடம் வாசிப்பு
+        </span>
+        <span class="px-3 py-1 bg-gray-100 rounded-full text-sm font-medium">
+          {story.genre}
+        </span>
+      </div>
 
-    <ShareButton title={story.title} url={currentUrl} />
+      {story.audio_url && (
+        <div class="mb-12 p-6 bg-blue-50/50 border border-blue-100 rounded-2xl shadow-sm">
+          <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-blue-900">
+            <i class="fa-solid fa-circle-play text-blue-600"></i>
+            கதையை கேளுங்கள்
+          </h3>
+          <audio controls class="w-full">
+            <source src={story.audio_url} type="audio/mpeg" />
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+      )}
 
-    <CommentSection storySlug={story.slug} />
-  </article>
+      <div class="story-content mt-8 text-gray-800 leading-relaxed text-xl">
+        {isDynamic ? <div set:html={contentHtml} /> : <Content currentUrl={currentUrl} />}
+      </div>
+
+      <ShareButton title={story.title} url={currentUrl} description={story.description} />
+
+      <!-- Similar Stories Section -->
+      {allRelated.length > 0 && (
+        <div class="mt-20 pt-12 border-t border-gray-100">
+          <h2 class="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+            <span class="w-8 h-1 bg-gray-900 rounded-full"></span>
+            தொடர்புடைய கதைகள்
+          </h2>
+          <div class="grid gap-6 md:grid-cols-3">
+            {allRelated.map(related => (
+              <StoryCard
+                title={related.title}
+                description={related.description}
+                url={`/stories/${related.slug}`}
+                publishDate={related.publishDate}
+                genre={related.genre}
+                image={related.image}
+                readingTime={related.readingTime}
+                hasAudio={related.hasAudio}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <CommentSection storySlug={story.slug} />
+    </article>
+  </div>
 </Layout>
 
 <style>
   .prose {
-    max-width: 65ch;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 75ch;
   }
   
   .story-content {
-    font-size: 1.2rem;
     line-height: 1.8;
   }
 </style>

@@ -2,17 +2,27 @@
 interface Props {
   title: string;
   url: string;
+  description?: string;
 }
 
-const { title, url } = Astro.props;
-const encodedTitle = encodeURIComponent(title);
-const encodedUrl = encodeURIComponent(url);
+const { title, url, description } = Astro.props;
+
+// Ensure URL is absolute for social sharing
+const siteUrl = 'https://akilakarthikeyan.com';
+const absoluteUrl = url.startsWith('http') ? url : `${siteUrl}${url}`;
+
+const shareText = description 
+  ? `${title}\n\n${description}\n\n` 
+  : `${title}\n\n`;
+
+const encodedText = encodeURIComponent(shareText);
+const encodedUrl = encodeURIComponent(absoluteUrl);
 
 const socialLinks = [
   {
     name: 'WhatsApp',
     icon: 'fa-whatsapp',
-    href: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
+    href: `https://wa.me/?text=${encodedText}${encodedUrl}`,
     color: 'hover:bg-[#25D366] hover:text-white',
     bg: 'bg-green-50 text-green-600'
   },
@@ -26,7 +36,7 @@ const socialLinks = [
   {
     name: 'X (Twitter)',
     icon: 'fa-x-twitter',
-    href: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
+    href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodedUrl}`,
     color: 'hover:bg-black hover:text-white',
     bg: 'bg-gray-50 text-gray-900'
   }
@@ -72,7 +82,12 @@ const socialLinks = [
     const url = copyBtn.getAttribute('data-url');
     if (url) {
       try {
-        await navigator.clipboard.writeText(url);
+        // Use the human-readable version (decoded) for sharing. 
+        // For Latin slugs, this will be exactly the same. 
+        // For Tamil, it will copy the characters instead of %-encoded mess.
+        const readableUrl = decodeURIComponent(url);
+        await navigator.clipboard.writeText(readableUrl);
+        
         const originalIcon = copyBtn.innerHTML;
         copyBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
         copyBtn.classList.remove('bg-gray-200');

@@ -10,6 +10,7 @@ const stories = defineCollection({
     featured: z.boolean().default(false),
     genre: z.enum(['நகைச்சுவை', 'நாடகம்', 'ஆன்மீகம்', 'சமூகம்', 'அனுபவம்', 'குடும்பம்']),
     image: z.string().optional(),
+    audio_url: z.string().optional(),
     tags: z.array(z.string()).default([]),
     layout: z.string().optional(),
   }),

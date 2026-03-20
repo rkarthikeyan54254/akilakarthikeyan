@@ -1,12 +1,78 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import StoryCard from '../components/StoryCard.astro';
+import SearchBar from '../components/SearchBar.astro';
+import AudioSlider from '../components/AudioSlider.astro';
 import { getCollection } from 'astro:content';
+import { supabase } from '../lib/supabase';
 
-const stories = await getCollection('stories');
-const featuredStories = stories
-  .filter(story => story.data.featured)
-  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+// 1. Fetch Static Stories
+const staticStories = await getCollection('stories');
+const formattedStaticStories = staticStories.map(s => {
+  const words = s.body.split(/\s+/).length || 0;
+  return {
+    title: s.data.title,
+    description: s.data.description,
+    slug: s.slug,
+    publishDate: s.data.publishDate,
+    genre: s.data.genre,
+    image: s.data.image,
+    isDynamic: false,
+    readingTime: Math.max(1, Math.ceil(words / 200)),
+    hasAudio: !!(s.data as any).audio_url
+  };
+});
+
+// 2. Fetch Dynamic Stories from Supabase
+let dynamicStories = [];
+try {
+  const { data, error } = await supabase
+    .from('stories')
+    .select('*')
+    .order('published_at', { ascending: false });
+  
+  if (!error && data) {
+    dynamicStories = data.map(s => {
+      const words = s.content.split(/\s+/).length || 0;
+      return {
+        title: s.title,
+        description: s.excerpt || '',
+        slug: s.slug,
+        publishDate: new Date(s.published_at),
+        genre: s.genre,
+        image: s.image_url,
+        isDynamic: true,
+        readingTime: Math.max(1, Math.ceil(words / 200)),
+        hasAudio: !!s.audio_url
+      };
+    });
+  }
+} catch (e) {}
+
+// 3. Combine and filter
+const allStories = [...formattedStaticStories, ...dynamicStories];
+
+// Filter Featured for list
+const featuredStories = allStories
+  .filter(story => {
+    // If dynamic, assume it's valid to show (or add a featured flag to DB later)
+    // If static, check the featured flag
+    if (!story.isDynamic) {
+      const original = staticStories.find(s => s.slug === story.slug);
+      return original?.data.featured;
+    }
+    return true; // Show dynamic stories in list if needed, or filter by logic
+  })
+  .sort((a, b) => b.publishDate.valueOf() - a.publishDate.valueOf())
+  .slice(0, 6); // Limit to 6
+
+// Filter Audio Stories for Slider
+const audioStories = allStories
+  .filter(story => story.hasAudio)
+  .map(story => ({
+    ...story,
+    url: `/stories/${story.slug}`
+  }));
 ---
 
 <Layout title="அகிலா கார்த்திகேயன் - எழுத்தாளர்">
@@ -52,45 +118,18 @@ const featuredStories = stories
   </section>
 
   <section class="mb-16 -mt-8 relative z-10">
-    <div class="max-w-2xl mx-auto">
-      <div class="bg-white p-2 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-2">
-        <div class="pl-4 text-gray-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-        </div>
-        <input 
-          type="text" 
-          id="home-search"
-          placeholder="கதைகளைத் தேடுங்கள்... (எ.கா: நகைச்சுவை, தீபாவளி)" 
-          class="w-full py-3 px-2 focus:outline-none text-lg text-gray-700"
-        />
-        <button 
-          id="home-search-btn"
-          class="bg-gray-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-800 transition-colors"
-        >
-          தேடு
-        </button>
-      </div>
-    </div>
+    <SearchBar />
   </section>
 
-  <script>
-    const searchBtn = document.getElementById('home-search-btn');
-    const searchInput = document.getElementById('home-search') as HTMLInputElement;
-
-    const handleSearch = () => {
-      const query = searchInput.value.trim();
-      if (query) {
-        window.location.href = `/stories?search=${encodeURIComponent(query)}`;
-      }
-    };
-
-    searchBtn?.addEventListener('click', handleSearch);
-    searchInput?.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') handleSearch();
-    });
-  </script>
+  {audioStories.length > 0 && (
+    <section class="mb-16">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-8 px-4 max-w-7xl mx-auto flex items-center gap-3">
+        <span class="w-1 h-8 bg-blue-600 rounded-full"></span>
+        கேட்கக்கூடிய கதைகள்
+      </h2>
+      <AudioSlider stories={audioStories} />
+    </section>
+  )}
 
   <section class="mb-12">
     <div class="flex items-center justify-between mb-8">
@@ -100,12 +139,14 @@ const featuredStories = stories
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {featuredStories.map(story => (
         <StoryCard
-          title={story.data.title}
-          description={story.data.description}
+          title={story.title}
+          description={story.description}
           url={`/stories/${story.slug}`}
-          publishDate={story.data.publishDate}
-          genre={story.data.genre}
-          image={story.data.image}
+          publishDate={story.publishDate}
+          genre={story.genre}
+          image={story.image}
+          readingTime={story.readingTime}
+          hasAudio={story.hasAudio}
         />
       ))}
     </div>

@@ -1,46 +1,73 @@
 ---
 ---
 
-<div class="relative max-w-xl mx-auto mb-8">
-  <div class="relative">
-    <input
-      type="text"
-      id="search-input"
-      placeholder="கதையின் பெயரை தேடுங்கள்..."
-      class="w-full px-4 py-3 text-base sm:text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 pl-10"
-      autocomplete="off"
-    />
-    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-      <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div class="relative max-w-2xl mx-auto mb-12 px-4 sm:px-0">
+  <div class="bg-white p-2 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-2">
+    <div class="pl-4 text-gray-400">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
       </svg>
     </div>
+    <input 
+      type="text" 
+      id="unified-search"
+      placeholder="கதைகள், புத்தகங்களைத் தேடுங்கள்..." 
+      class="w-full py-3 px-2 focus:outline-none text-lg text-gray-700 rounded-lg"
+      autocomplete="off"
+    />
+    <button 
+      id="unified-search-btn"
+      class="bg-gray-900 text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-800 transition-colors whitespace-nowrap"
+    >
+      தேடு
+    </button>
   </div>
   
   <div 
-    id="search-results" 
-    class="absolute left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 max-h-[70vh] overflow-y-auto hidden scrollbar-hide"
+    id="unified-search-results" 
+    class="absolute left-0 right-0 mx-4 sm:mx-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 max-h-[70vh] overflow-y-auto hidden z-50 scrollbar-hide overflow-hidden"
   >
   </div>
 </div>
 
 <script>
-  let stories = [];
+  let searchData = [];
   let searchTimeout;
 
-  async function fetchStories() {
-    const response = await fetch('/api/stories.json');
-    stories = await response.json();
+  async function fetchData() {
+    try {
+      const response = await fetch('/api/stories.json');
+      searchData = await response.json();
+    } catch (e) {
+      console.error("Failed to fetch search data", e);
+    }
   }
 
   async function initSearch() {
-    await fetchStories();
+    await fetchData();
     
-    const searchInput = document.getElementById('search-input');
-    const searchResults = document.getElementById('search-results');
+    const searchInput = document.getElementById('unified-search') as HTMLInputElement;
+    const searchBtn = document.getElementById('unified-search-btn');
+    const searchResults = document.getElementById('unified-search-results');
+
+    const handleSearchClick = () => {
+      const query = searchInput.value.trim();
+      if (query) {
+        // If it's a general search, go to stories page with search param
+        window.location.href = `/stories?search=${encodeURIComponent(query)}`;
+      }
+    };
+
+    searchBtn?.addEventListener('click', handleSearchClick);
+    
+    searchInput?.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleSearchClick();
+      }
+    });
 
     searchInput?.addEventListener('input', (e) => {
-      const query = (e.target as HTMLInputElement).value.toLowerCase();
+      const query = (e.target as HTMLInputElement).value.normalize('NFC').toLowerCase();
       
       if (searchTimeout) {
         clearTimeout(searchTimeout);
@@ -52,27 +79,39 @@
           return;
         }
 
-        const filteredStories = stories.filter(story => 
-          story.title.toLowerCase().includes(query) ||
-          story.description.toLowerCase().includes(query)
-        );
+        const filtered = searchData.filter(item => {
+          const title = item.title.normalize('NFC').toLowerCase();
+          const description = (item.description || '').normalize('NFC').toLowerCase();
+          return title.includes(query) || description.includes(query);
+        });
 
         if (searchResults) {
-          searchResults.innerHTML = filteredStories.length ? 
-            filteredStories.map(story => `
+          if (filtered.length > 0) {
+            searchResults.innerHTML = filtered.map(item => `
               <a 
-                href="/stories/${story.slug}" 
-                class="block p-4 hover:bg-gray-50 border-b last:border-b-0 focus:outline-none focus:bg-gray-50"
+                href="${item.url}" 
+                class="block p-4 hover:bg-gray-50 border-b border-gray-50 last:border-b-0 group transition-colors"
               >
-                <h3 class="font-semibold line-clamp-1">${story.title}</h3>
-                <p class="text-sm text-gray-600 line-clamp-2">${story.description}</p>
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 class="font-bold text-gray-900 group-hover:text-gray-700 transition-colors">${item.title}</h3>
+                    <p class="text-sm text-gray-500 line-clamp-2 mt-1">${item.description}</p>
+                  </div>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                    item.type === 'book' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'
+                  }">
+                    ${item.type === 'book' ? 'புத்தகம்' : 'கதை'}
+                  </span>
+                </div>
               </a>
-            `).join('') :
-            '<div class="p-4 text-gray-500">கதைகள் எதுவும் கிடைக்கவில்லை</div>';
+            `).join('');
+          } else {
+            searchResults.innerHTML = '<div class="p-6 text-center text-gray-500">முடிவுகள் எதுவும் கிடைக்கவில்லை</div>';
+          }
           
           searchResults.classList.remove('hidden');
         }
-      }, 300);
+      }, 200);
     });
 
     // Close results when clicking outside
@@ -80,11 +119,6 @@
       if (!searchInput?.contains(e.target as Node) && !searchResults?.contains(e.target as Node)) {
         searchResults?.classList.add('hidden');
       }
-    });
-
-    // Handle touch events for mobile
-    searchInput?.addEventListener('touchstart', (e) => {
-      e.stopPropagation();
     });
   }
 

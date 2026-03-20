@@ -44,8 +44,9 @@ const genres = ['நகைச்சுவை', 'நாடகம்', 'ஆன்�
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label for="slug" class="block text-sm font-medium text-gray-700">Slug (URL)</label>
-          <input type="text" id="slug" name="slug" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border bg-gray-50">
-          <p class="text-xs text-gray-500 mt-1">Warning: Changing this will break existing links to this story.</p>
+          <input type="text" id="slug" name="slug" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border">
+          <p class="text-xs text-gray-500 mt-1">Warning: Changing this will break existing links to this story. Use Latin characters for better sharing.</p>
+          <div id="slug-warning" class="hidden text-xs text-amber-600 mt-1 font-medium">Warning: Non-Latin characters will make shared links look messy (encoded).</div>
         </div>
 
         <div>
@@ -69,6 +70,11 @@ const genres = ['நகைச்சுவை', 'நாடகம்', 'ஆன்�
           <p class="text-xs text-gray-500 mb-2">Current Image:</p>
           <img src="" alt="Preview" class="h-48 w-auto rounded-lg object-cover">
         </div>
+      </div>
+
+      <div>
+        <label for="audio_url" class="block text-sm font-medium text-gray-700">Audio URL (Optional MP3 Link)</label>
+        <input type="text" id="audio_url" name="audio_url" placeholder="https://example.com/audio.mp3 or /audio/file.mp3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border">
       </div>
 
       <div>
@@ -123,6 +129,22 @@ const genres = ['நகைச்சுவை', 'நாடகம்', 'ஆன்�
       (document.getElementById('excerpt') as HTMLTextAreaElement).value = story.excerpt || '';
       (document.getElementById('content') as HTMLTextAreaElement).value = story.content;
       (document.getElementById('current-image-url') as HTMLInputElement).value = story.image_url || '';
+      (document.getElementById('audio_url') as HTMLInputElement).value = story.audio_url || '';
+
+      const slugInput = document.getElementById('slug') as HTMLInputElement;
+      const slugWarning = document.getElementById('slug-warning');
+      const checkSlugForNonAscii = (val: string) => {
+        if (/[^\x00-\x7F]/.test(val)) {
+          slugWarning?.classList.remove('hidden');
+        } else {
+          slugWarning?.classList.add('hidden');
+        }
+      };
+
+      checkSlugForNonAscii(slugInput.value);
+      slugInput.addEventListener('input', () => {
+        checkSlugForNonAscii(slugInput.value);
+      });
 
       if (story.image_url) {
         const preview = document.getElementById('image-preview');
@@ -217,7 +239,8 @@ const genres = ['நகைச்சுவை', 'நாடகம்', 'ஆன்�
           excerpt: formData.get('excerpt'),
           content: formData.get('content'),
           published_at: formData.get('published_at'), // Update published date
-          image_url: imageUrl
+          image_url: imageUrl,
+          audio_url: formData.get('audio_url')
         })
         .eq('id', storyId.value);
 

@@ -34,7 +34,8 @@ const genres = ['நகைச்சுவை', 'நாடகம்', 'ஆன்�
         <div>
           <label for="slug" class="block text-sm font-medium text-gray-700">Slug (URL)</label>
           <input type="text" id="slug" name="slug" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border bg-gray-50" readonly>
-          <p class="text-xs text-gray-500 mt-1">Auto-generated from title</p>
+          <p id="slug-hint" class="text-xs text-gray-500 mt-1">Auto-generated from title. Use Latin characters for better sharing.</p>
+          <div id="slug-warning" class="hidden text-xs text-amber-600 mt-1 font-medium">Warning: Non-Latin characters will make shared links look messy (encoded).</div>
         </div>
 
         <div>
@@ -54,6 +55,11 @@ const genres = ['நகைச்சுவை', 'நாடகம்', 'ஆன்�
         <div id="image-preview" class="mt-4 hidden">
           <img src="" alt="Preview" class="h-48 w-auto rounded-lg object-cover">
         </div>
+      </div>
+
+      <div>
+        <label for="audio_url" class="block text-sm font-medium text-gray-700">Audio URL (Optional MP3 Link)</label>
+        <input type="text" id="audio_url" name="audio_url" placeholder="https://example.com/audio.mp3 or /audio/file.mp3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-900 focus:ring-gray-900 sm:text-sm p-2 border">
       </div>
 
       <div>
@@ -87,27 +93,41 @@ const genres = ['நகைச்சுவை', 'நாடகம்', 'ஆன்�
   // Auto-generate Slug
   const titleInput = document.getElementById('title') as HTMLInputElement;
   const slugInput = document.getElementById('slug') as HTMLInputElement;
+  const slugWarning = document.getElementById('slug-warning');
+
+  const checkSlugForNonAscii = (val: string) => {
+    if (/[^\x00-\x7F]/.test(val)) {
+      slugWarning?.classList.remove('hidden');
+    } else {
+      slugWarning?.classList.add('hidden');
+    }
+  };
 
   titleInput?.addEventListener('input', () => {
-    const slug = titleInput.value
+    // Generate Latin slug by removing non-word characters (which include non-ASCII)
+    const generatedSlug = titleInput.value
       .toLowerCase()
       .trim()
-      .replace(/[^\w\s-]/g, '') // Remove non-word chars (Tamil chars might be removed here, need to be careful. Better to use a dedicated slugify for Tamil if needed, or manual input)
+      .replace(/[^\w\s-]/g, '') 
       .replace(/[\s_-]+/g, '-')
       .replace(/^-+|-+$/g, '');
     
-    // For Tamil titles, simple slugify might fail. Let's allow manual edit if needed, or use a timestamp fallback.
-    // Actually, let's keep it editable but auto-fill if empty.
-    if(slug.length > 0) {
-        slugInput.value = slug;
-    } else {
-        // Fallback for non-latin scripts: timestamp
+    // Only auto-fill if the generated slug has content (i.e. if the title has some Latin/English chars)
+    if(generatedSlug.length > 0) {
+        slugInput.value = generatedSlug;
+    } else if (slugInput.value.length === 0) {
+        // Fallback only if currently empty
         slugInput.value = `story-${Date.now()}`;
     }
+    checkSlugForNonAscii(slugInput.value);
   });
   
-  // Allow manual override
+  // Allow manual override and check for non-ASCII
   slugInput.removeAttribute('readonly');
+  slugInput.classList.remove('bg-gray-50');
+  slugInput.addEventListener('input', () => {
+    checkSlugForNonAscii(slugInput.value);
+  });
 
 
   // Image Preview
@@ -172,6 +192,7 @@ const genres = ['நகைச்சுவை', 'நாடகம்', 'ஆன்�
           content: formData.get('content'),
           published_at: formData.get('published_at'), // Add published date
           image_url: imageUrl,
+          audio_url: formData.get('audio_url'),
           author: 'அகிலா கார்த்திகேயன்' // Default or fetch from profile
         }]);
 

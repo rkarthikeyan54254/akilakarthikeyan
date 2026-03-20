@@ -3,20 +3,26 @@ import Layout from '../../layouts/Layout.astro';
 import StoryCard from '../../components/StoryCard.astro';
 import GenreFilter from '../../components/GenreFilter.astro';
 import SearchBar from '../../components/SearchBar.astro';
+import AudioSlider from '../../components/AudioSlider.astro';
 import { getCollection } from 'astro:content';
 import { supabase } from '../../lib/supabase';
 
 // 1. Fetch Static Stories
 const staticStories = await getCollection('stories');
-const formattedStaticStories = staticStories.map(s => ({
-  title: s.data.title,
-  description: s.data.description,
-  slug: s.slug,
-  publishDate: s.data.publishDate,
-  genre: s.data.genre,
-  image: s.data.image,
-  isDynamic: false
-}));
+const formattedStaticStories = staticStories.map(s => {
+  const words = s.body.split(/\s+/).length || 0;
+  return {
+    title: s.data.title,
+    description: s.data.description,
+    slug: s.slug,
+    publishDate: s.data.publishDate,
+    genre: s.data.genre,
+    image: s.data.image,
+    isDynamic: false,
+    readingTime: Math.max(1, Math.ceil(words / 200)),
+    hasAudio: !!(s.data as any).audio_url
+  };
+});
 
 // 2. Fetch Dynamic Stories from Supabase
 let dynamicStories = [];
@@ -27,15 +33,20 @@ try {
     .order('published_at', { ascending: false });
   
   if (!error && data) {
-    dynamicStories = data.map(s => ({
-      title: s.title,
-      description: s.excerpt || '',
-      slug: s.slug,
-      publishDate: new Date(s.published_at),
-      genre: s.genre,
-      image: s.image_url,
-      isDynamic: true
-    }));
+    dynamicStories = data.map(s => {
+      const words = s.content.split(/\s+/).length || 0;
+      return {
+        title: s.title,
+        description: s.excerpt || '',
+        slug: s.slug,
+        publishDate: new Date(s.published_at),
+        genre: s.genre,
+        image: s.image_url,
+        isDynamic: true,
+        readingTime: Math.max(1, Math.ceil(words / 200)),
+        hasAudio: !!s.audio_url
+      };
+    });
   }
 } catch (e) {
   console.error("Error fetching dynamic stories:", e);
@@ -45,10 +56,22 @@ try {
 const allStories = [...formattedStaticStories, ...dynamicStories]
   .sort((a, b) => b.publishDate.valueOf() - a.publishDate.valueOf());
 
+// Filter stories with Audio
+const audioStories = allStories
+  .filter(story => story.hasAudio)
+  .map(story => ({
+    ...story,
+    url: `/stories/${story.slug}`
+  }));
+
 // Handle Search
-const search = Astro.url.searchParams.get('search')?.toLowerCase();
+const search = Astro.url.searchParams.get('search')?.normalize('NFC').toLowerCase();
 const filteredStories = search 
-  ? allStories.filter(s => s.title.toLowerCase().includes(search) || s.description.toLowerCase().includes(search))
+  ? allStories.filter(s => {
+      const title = s.title.normalize('NFC').toLowerCase();
+      const description = (s.description || '').normalize('NFC').toLowerCase();
+      return title.includes(search) || description.includes(search);
+    })
   : allStories;
 
 // Get unique genres
@@ -58,6 +81,8 @@ const genres = [...new Set(allStories.map(story => story.genre))];
 <Layout title="கதைகள் - அகிலா கார்த்திகேயன்">
   <h1 class="text-3xl font-bold text-gray-900 mb-8">அனைத்து கதைகள்</h1>
   
+  {audioStories.length > 0 && <AudioSlider stories={audioStories} />}
+
   <SearchBar />
   <GenreFilter genres={genres} />
   
@@ -70,6 +95,8 @@ const genres = [...new Set(allStories.map(story => story.genre))];
         publishDate={story.publishDate}
         genre={story.genre}
         image={story.image}
+        readingTime={story.readingTime}
+        hasAudio={story.hasAudio}
       />
     ))}
   </div>
