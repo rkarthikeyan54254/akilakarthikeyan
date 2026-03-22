@@ -31,6 +31,7 @@ const books = defineCollection({
     featured: z.boolean().default(false),
     inStock: z.boolean().default(true),
     tags: z.array(z.string()).default([]),
+    pdfUrl: z.string().optional(),
   }),
 });
 

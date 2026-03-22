@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
-import AddToCartButton from '../../components/AddToCartButton.astro';
 import ShareButton from '../../components/ShareButton.astro';
 
 // Enable static pre-rendering
@@ -39,36 +38,88 @@ const currentUrl = Astro.url.href;
   image={book.data.coverImage}
   currentUrl={currentUrl}
 >
-  <div class="max-w-4xl mx-auto px-4">
-    <div class="grid md:grid-cols-2 gap-8">
-      <div>
-        <img 
-          src={book.data.coverImage} 
-          alt={`Cover of ${book.data.title}`}
-          class="w-full rounded-lg shadow-lg"
-        />
+  <div class="max-w-5xl mx-auto px-4 py-8 md:py-16">
+    <!-- Back Link -->
+    <nav class="mb-12">
+      <a href="/stories" class="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium transition-colors group">
+        <i class="fa-solid fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+        மீண்டும் கதைகள் மற்றும் புத்தகங்கள் பக்கத்திற்கு
+      </a>
+    </nav>
+
+    <div class="flex flex-col md:flex-row gap-12 lg:gap-20">
+      <!-- Book Cover Column -->
+      <div class="w-full md:w-1/3 lg:w-2/5 flex-shrink-0">
+        <div class="sticky top-24">
+          <div class="relative group shadow-2xl rounded-xl overflow-hidden bg-gray-50 border border-gray-100">
+            <img 
+              src={book.data.coverImage} 
+              alt={`Cover of ${book.data.title}`}
+              class="w-full h-auto max-h-[70vh] object-contain mx-auto transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
+          
+          {book.data.pdfUrl && (
+            <div class="mt-8 space-y-4">
+              <a 
+                href={book.data.pdfUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                class="flex items-center justify-center gap-3 w-full py-4 px-6 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1 active:translate-y-0 group"
+              >
+                <i class="fa-solid fa-file-pdf text-2xl group-hover:animate-bounce"></i>
+                புத்தகத்தை வாசிக்க (PDF)
+              </a>
+              <p class="text-xs text-center text-gray-500 font-medium italic">
+                * PDF கோப்பு புதிய விண்டோவில் திறக்கப்படும்
+              </p>
+            </div>
+          )}
+        </div>
       </div>
       
-      <div>
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">{book.data.title}</h1>
-        <div class="text-gray-600 mb-4">
-          <p>எழுதியவர்: {book.data.author}</p>
-          <p>வெளியீடு: {formattedDate}</p>
-          <p>பக்கங்கள்: {book.data.pages}</p>
-          <p>ISBN: {book.data.isbn}</p>
-        </div>
-        
-        <div class="text-2xl font-bold text-gray-900 mb-6">
-          ₹{book.data.price}
-        </div>
+      <!-- Book Info Column -->
+      <div class="flex-1">
+        <header class="mb-10">
+          <div class="inline-block px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-bold tracking-wide mb-6">
+            {book.data.genre}
+          </div>
+          <h1 class="text-4xl lg:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
+            {book.data.title}
+          </h1>
+          <div class="flex flex-wrap items-center gap-x-6 gap-y-3 text-gray-600 font-medium border-b border-gray-100 pb-8">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-user-pen text-gray-400"></i>
+              <span>{book.data.author}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-calendar-day text-gray-400"></i>
+              <span>{formattedDate}</span>
+            </div>
+            {book.data.pages && (
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-book-open text-gray-400"></i>
+                <span>{book.data.pages} பக்கங்கள்</span>
+              </div>
+            )}
+            {book.data.isbn && (
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-barcode text-gray-400"></i>
+                <span>ISBN: {book.data.isbn}</span>
+              </div>
+            )}
+          </div>
+        </header>
 
-        <AddToCartButton book={book} />
-
-        <div class="prose prose-lg mt-8 mb-12">
+        <div class="prose prose-lg prose-gray max-w-none text-gray-800 leading-relaxed text-xl mb-12">
           <Content />
         </div>
 
-        <div class="mt-8 pt-8 border-t border-gray-100">
+        <div class="bg-gray-50 rounded-2xl p-8 border border-gray-100 mb-12">
+          <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-share-nodes text-blue-600"></i>
+            இந்த புத்தகத்தை பகிருங்கள்
+          </h3>
           <ShareButton 
             title={book.data.title} 
             url={currentUrl} 
@@ -79,3 +130,9 @@ const currentUrl = Astro.url.href;
     </div>
   </div>
 </Layout>
+
+<style is:global>
+  .prose p {
+    margin-bottom: 1.5rem;
+  }
+</style>
