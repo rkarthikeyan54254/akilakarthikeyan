@@ -8,9 +8,10 @@ interface Props {
   image?: string;
   readingTime?: number;
   hasAudio?: boolean;
+  type?: 'story' | 'book';
 }
 
-const { title, description, url, publishDate, genre, image, readingTime, hasAudio } = Astro.props;
+const { title, description, url, publishDate, genre, image, readingTime, hasAudio, type = 'story' } = Astro.props;
 const formattedDate = new Date(publishDate).toLocaleDateString('ta-IN', {
   year: 'numeric',
   month: 'long',
@@ -34,6 +35,11 @@ const formattedDate = new Date(publishDate).toLocaleDateString('ta-IN', {
           <i class="fa-solid fa-volume-high animate-pulse"></i>
         </div>
       )}
+      {type === 'book' && (
+        <div class="absolute top-3 left-3 px-2 py-1 bg-blue-600 text-white text-[10px] uppercase tracking-wider font-bold rounded shadow-lg">
+          புத்தகம்
+        </div>
+      )}
     </div>
   )}
   <div class="p-5 sm:p-6">
@@ -41,6 +47,11 @@ const formattedDate = new Date(publishDate).toLocaleDateString('ta-IN', {
       <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded-md text-[10px] uppercase tracking-wider font-bold">
         {genre}
       </span>
+      {type === 'story' && (
+        <span class="px-2 py-1 bg-gray-50 text-gray-400 rounded-md text-[10px] uppercase tracking-wider font-bold">
+          கதை
+        </span>
+      )}
     </div>
     <h2 class="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-gray-700 transition-colors">{title}</h2>
     <p class="text-gray-600 mb-6 line-clamp-2 text-sm leading-relaxed">{description}</p>

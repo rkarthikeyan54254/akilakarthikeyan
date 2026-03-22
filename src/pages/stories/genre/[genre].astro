@@ -3,53 +3,109 @@ import Layout from '../../../layouts/Layout.astro';
 import StoryCard from '../../../components/StoryCard.astro';
 import GenreFilter from '../../../components/GenreFilter.astro';
 import { getCollection } from 'astro:content';
+import { supabase } from '../../../lib/supabase';
 
-export const prerender = true;
-
-export async function getStaticPaths() {
-  const stories = await getCollection('stories');
-  const genres = [...new Set(stories.map(story => story.data.genre))];
-  
-  return genres.map(genre => ({
-    params: { genre },
-    props: { 
-      stories: stories.filter(story => story.data.genre === genre),
-      genres
-    },
-  }));
-}
+// In SSR mode, we can fetch all stories dynamically or keep it hybrid.
+// We'll set prerender to false to ensure we always get latest from Supabase too.
+export const prerender = false;
 
 const { genre } = Astro.params;
-const { stories, genres } = Astro.props;
 
-const sortedStories = stories.sort((a, b) => 
-  b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
-);
+// 1. Fetch Static Stories for this genre
+const staticStories = await getCollection('stories');
+const formattedStatic = staticStories
+  .filter(s => s.data.genre === genre)
+  .map(s => {
+    const words = s.body.split(/\s+/).length || 0;
+    return {
+      title: s.data.title,
+      description: s.data.description,
+      slug: s.slug,
+      publishDate: s.data.publishDate,
+      genre: s.data.genre,
+      image: s.data.image,
+      isDynamic: false,
+      readingTime: Math.max(1, Math.ceil(words / 200)),
+      hasAudio: !!(s.data as any).audio_url
+    };
+  });
 
-const genreDisplayNames = {
+// 2. Fetch Dynamic Stories from Supabase for this genre
+let dynamicStories = [];
+try {
+  const { data, error } = await supabase
+    .from('stories')
+    .select('*')
+    .eq('genre', genre)
+    .order('published_at', { ascending: false });
+  
+  if (!error && data) {
+    dynamicStories = data.map(s => {
+      const words = s.content.split(/\s+/).length || 0;
+      return {
+        title: s.title,
+        description: s.excerpt || '',
+        slug: s.slug,
+        publishDate: new Date(s.published_at),
+        genre: s.genre,
+        image: s.image_url,
+        isDynamic: true,
+        readingTime: Math.max(1, Math.ceil(words / 200)),
+        hasAudio: !!s.audio_url
+      };
+    });
+  }
+} catch (e) {
+  console.error("Error fetching dynamic stories for genre:", e);
+}
+
+// 3. Combine and Sort
+const allStories = [...formattedStatic, ...dynamicStories]
+  .sort((a, b) => b.publishDate.valueOf() - a.publishDate.valueOf());
+
+// Get all genres for filter (from static for now, or fetch all from both)
+const allGenres = [...new Set(staticStories.map(story => story.data.genre))];
+
+const genreDisplayNames: Record<string, string> = {
   'நகைச்சுவை': 'நகைச்சுவை கதைகள்',
   'நாடகம்': 'நாடக கதைகள்',
   'ஆன்மீகம்': 'ஆன்மீக கதைகள்',
   'சமூகம்': 'சமூக கதைகள்',
-  'அனுபவம்': 'அனுபவக் கதைகள்'
+  'அனுபவம்': 'அனுபவக் கதைகள்',
+  'குடும்பம்': 'குடும்ப கதைகள்'
 };
+
+const displayTitle = genreDisplayNames[genre || ''] || `${genre} கதைகள்`;
 ---
 
-<Layout title={`${genreDisplayNames[genre]} - அகிலா கார்த்திகேயன்`}>
-  <h1 class="text-3xl font-bold text-gray-900 mb-8">{genreDisplayNames[genre]}</h1>
+<Layout 
+  title={`${displayTitle} - அகிலா கார்த்திகேயன்`}
+  description={`அகிலா கார்த்திகேயனின் ${displayTitle} தொகுப்பு. வாழ்வில் நாம் காணும் சுவாரசியமான நிகழ்வுகளின் தொகுப்பு.`}
+  image="/images/ak_story.jpg"
+>
+  <h1 class="text-3xl font-bold text-gray-900 mb-8">{displayTitle}</h1>
   
-  <GenreFilter currentGenre={genre} genres={genres} />
+  <GenreFilter currentGenre={genre} genres={allGenres} />
   
   <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-    {sortedStories.map(story => (
+    {allStories.map(story => (
       <StoryCard
-        title={story.data.title}
-        description={story.data.description}
+        title={story.title}
+        description={story.description}
         url={`/stories/${story.slug}`}
-        publishDate={story.data.publishDate}
-        genre={story.data.genre}
-        image={story.data.image}
+        publishDate={story.publishDate}
+        genre={story.genre}
+        image={story.image}
+        readingTime={story.readingTime}
+        hasAudio={story.hasAudio}
       />
     ))}
   </div>
+
+  {allStories.length === 0 && (
+    <div class="text-center py-20">
+      <p class="text-gray-600 text-lg">இந்தப் பிரிவில் தற்பொழுது கதைகள் இல்லை.</p>
+      <a href="/stories" class="mt-4 inline-block text-blue-600 hover:underline">அனைத்து கதைகளையும் காண்க</a>
+    </div>
+  )}
 </Layout>

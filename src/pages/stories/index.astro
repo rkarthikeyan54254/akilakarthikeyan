@@ -19,12 +19,31 @@ const formattedStaticStories = staticStories.map(s => {
     genre: s.data.genre,
     image: s.data.image,
     isDynamic: false,
+    type: 'story',
     readingTime: Math.max(1, Math.ceil(words / 200)),
     hasAudio: !!(s.data as any).audio_url
   };
 });
 
-// 2. Fetch Dynamic Stories from Supabase
+// 2. Fetch Static Books (now included in "All Stories" list)
+const books = await getCollection('books');
+const formattedBooks = books.map(b => {
+  return {
+    title: b.data.title,
+    description: b.data.description,
+    slug: b.slug,
+    publishDate: b.data.publishDate,
+    genre: b.data.genre,
+    image: b.data.coverImage,
+    isDynamic: false,
+    type: 'book',
+    readingTime: b.data.pages ? Math.ceil(b.data.pages / 2) : 10,
+    hasAudio: false,
+    isBook: true
+  };
+});
+
+// 3. Fetch Dynamic Stories from Supabase
 let dynamicStories = [];
 try {
   const { data, error } = await supabase
@@ -43,6 +62,7 @@ try {
         genre: s.genre,
         image: s.image_url,
         isDynamic: true,
+        type: 'story',
         readingTime: Math.max(1, Math.ceil(words / 200)),
         hasAudio: !!s.audio_url
       };
@@ -52,8 +72,8 @@ try {
   console.error("Error fetching dynamic stories:", e);
 }
 
-// 3. Merge and Sort
-const allStories = [...formattedStaticStories, ...dynamicStories]
+// 4. Merge and Sort
+const allStories = [...formattedStaticStories, ...formattedBooks, ...dynamicStories]
   .sort((a, b) => b.publishDate.valueOf() - a.publishDate.valueOf());
 
 // Filter stories with Audio
@@ -78,8 +98,12 @@ const filteredStories = search
 const genres = [...new Set(allStories.map(story => story.genre))];
 ---
 
-<Layout title="கதைகள் - அகிலா கார்த்திகேயன்">
-  <h1 class="text-3xl font-bold text-gray-900 mb-8">அனைத்து கதைகள்</h1>
+<Layout 
+  title="கதைகள் - அகிலா கார்த்திகேயன்"
+  description="அகிலா கார்த்திகேயனின் நகைச்சுவை மற்றும் ஆன்மீகச் சிறுகதைகளின் முழுத் தொகுப்பு. சமூக அவலங்களை நகைச்சுவையோடும், வாழ்வின் எதார்த்தங்களை உணர்ச்சிகரமாகவும் விவரிக்கும் கதைகள்."
+  image="/images/ak_story.jpg"
+>
+  <h1 class="text-3xl font-bold text-gray-900 mb-8">அனைத்து கதைகள் மற்றும் புத்தகங்கள்</h1>
   
   {audioStories.length > 0 && <AudioSlider stories={audioStories} />}
 
@@ -91,13 +115,21 @@ const genres = [...new Set(allStories.map(story => story.genre))];
       <StoryCard
         title={story.title}
         description={story.description}
-        url={`/stories/${story.slug}`}
+        url={story.type === 'book' ? `/books/${story.slug}` : `/stories/${story.slug}`}
         publishDate={story.publishDate}
         genre={story.genre}
         image={story.image}
         readingTime={story.readingTime}
         hasAudio={story.hasAudio}
+        type={story.type as any}
       />
     ))}
   </div>
+
+  {filteredStories.length === 0 && (
+    <div class="text-center py-20">
+      <p class="text-gray-600 text-lg">தேடலுக்கு முடிவுகள் எதுவும் இல்லை.</p>
+      <a href="/stories" class="mt-4 inline-block text-blue-600 hover:underline">அனைத்தையும் காண்க</a>
+    </div>
+  )}
 </Layout>
