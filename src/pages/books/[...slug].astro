@@ -6,19 +6,15 @@ import ShareButton from '../../components/ShareButton.astro';
 // Disable static pre-rendering for SSR consistency
 export const prerender = false;
 
-export async function getStaticPaths() {
-  const books = await getCollection('books');
-  return books.map(book => ({
-    params: { slug: book.slug },
-    props: { book },
-  }));
-}
+const { slug } = Astro.params;
 
-const { book } = Astro.props;
+// 1. Fetch from static collection
+const books = await getCollection('books');
+const book = books.find(b => b.slug === slug);
 
-// Add error handling
+// 404 if not found
 if (!book) {
-  return new Response('Book not found', { status: 404 });
+  return Astro.redirect('/404');
 }
 
 const { Content } = await book.render();

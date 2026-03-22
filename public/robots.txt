@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://akilakarthikeyan.com/sitemap-index.xml
+Sitemap: https://akilakarthikeyan.com/sitemap.xml

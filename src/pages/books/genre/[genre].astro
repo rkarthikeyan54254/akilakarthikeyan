@@ -7,42 +7,39 @@ import { getCollection } from 'astro:content';
 // Disable static pre-rendering for SSR consistency
 export const prerender = false;
 
-export async function getStaticPaths() {
-  const books = await getCollection('books');
-  const genres = [...new Set(books.map(book => book.data.genre))];
-  
-  return genres.map(genre => ({
-    params: { genre },
-    props: { 
-      books: books.filter(book => book.data.genre === genre),
-      genres
-    },
-  }));
-}
-
 const { genre } = Astro.params;
-const { books, genres } = Astro.props;
 
-// Add error handling
-if (!books || !genres) {
-  return new Response('Books not found', { status: 404 });
+// Fetch all books to get the ones for this genre AND the list of all genres
+const allBooks = await getCollection('books');
+const genres = [...new Set(allBooks.map(book => book.data.genre))];
+const filteredBooks = allBooks.filter(book => book.data.genre === genre);
+
+// 404 if no books found for this genre
+if (filteredBooks.length === 0) {
+  return Astro.redirect('/404');
 }
 
-const sortedBooks = books.sort((a, b) => 
+const sortedBooks = filteredBooks.sort((a, b) => 
   b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
 );
 
-const genreDisplayNames = {
+const genreDisplayNames: Record<string, string> = {
   'நகைச்சுவை': 'நகைச்சுவை புத்தகங்கள்',
   'நாடகம்': 'நாடக புத்தகங்கள்',
   'ஆன்மீகம்': 'ஆன்மீக புத்தகங்கள்',
   'சமூகம்': 'சமூக புத்தகங்கள்',
-  'அனுபவம்': 'அனுபவ புத்தகங்கள்'
+  'அனுபவம்': 'அனுபவ புத்தகங்கள்',
+  'ஆன்மிகம்': 'ஆன்மீக புத்தகங்கள்'
 };
+
+const displayTitle = genreDisplayNames[genre || ''] || `${genre} புத்தகங்கள்`;
 ---
 
-<Layout title={`${genreDisplayNames[genre]} - அகிலா கார்த்திகேயன்`}>
-  <h1 class="text-3xl font-bold text-gray-900 mb-8">{genreDisplayNames[genre]}</h1>
+<Layout title={`${displayTitle} - அகிலா கார்த்திகேயன்`}>
+  <div class="mb-12">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{displayTitle}</h1>
+    <div class="h-1 w-20 bg-gray-900 rounded-full"></div>
+  </div>
   
   <GenreFilter type="books" currentGenre={genre} genres={genres} />
   
