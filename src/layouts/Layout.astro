@@ -21,6 +21,15 @@ import NavDropdown from '../components/NavDropdown.astro';
 import CartButton from '../components/CartButton.astro';
 import CartDrawer from '../components/CartDrawer.astro';
 import MobileMenu from '../components/MobileMenu.astro';
+import VisitCounter from '../components/VisitCounter.astro';
+import { supabase } from '../lib/supabase';
+
+// Increment visit counter on every page load (Server Side)
+try {
+  await supabase.rpc('increment_total_reads');
+} catch (e) {
+  console.error("Layout: Error incrementing stats", e);
+}
 
 const siteUrl = 'https://akilakarthikeyan.com';
 const canonicalURL = new URL(Astro.url.pathname, siteUrl).toString();
@@ -115,8 +124,15 @@ if (image) {
 
     <!-- Footer -->
     <footer class="bg-white border-t mt-12">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-gray-600">
-        <p>&copy; {new Date().getFullYear()} அகிலா கார்த்திகேயன் - அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை</p>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+          <div class="text-center md:text-left text-gray-600">
+            <p class="font-bold text-gray-900 mb-1">அகிலா கார்த்திகேயன்</p>
+            <p class="text-sm">&copy; {new Date().getFullYear()} - அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை</p>
+          </div>
+          
+          <VisitCounter />
+        </div>
       </div>
     </footer>
     <CartDrawer />

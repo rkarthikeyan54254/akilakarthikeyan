@@ -1,0 +1,72 @@
+---
+import { supabase } from '../lib/supabase';
+
+// Fetch initial count for Server-Side Rendering
+let initialCount = 5000;
+try {
+  const { data, error } = await supabase
+    .from('site_stats')
+    .select('value')
+    .eq('key', 'total_reads')
+    .single();
+  if (data && !error) initialCount = data.value;
+} catch (e) {
+  console.error("VisitCounter: Error fetching stats", e);
+}
+---
+
+<div class="inline-flex items-center gap-3 px-6 py-3 bg-white/50 backdrop-blur-md border border-gray-100 rounded-2xl shadow-sm group hover:shadow-md transition-all duration-300">
+  <div class="w-10 h-10 flex items-center justify-center bg-blue-600 text-white rounded-xl shadow-inner group-hover:scale-110 transition-transform">
+    <i class="fa-solid fa-eye text-lg"></i>
+  </div>
+  <div class="flex flex-col">
+    <span class="text-[10px] uppercase tracking-widest font-extrabold text-gray-400 leading-none mb-1">
+      மொத்த வாசிப்புகள்
+    </span>
+    <div class="flex items-center">
+      <span 
+        id="counter-value" 
+        class="text-2xl font-black text-gray-900 font-mono tracking-tighter"
+        data-count={initialCount}
+      >
+        {initialCount.toLocaleString()}
+      </span>
+      <span class="ml-1 text-blue-600 animate-pulse text-xs">+</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Simple "Rolling" odometer-style animation
+  function animateValue(obj: HTMLElement, start: number, end: number, duration: number) {
+    let startTimestamp: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const current = Math.floor(progress * (end - start) + start);
+      obj.innerHTML = current.toLocaleString();
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      }
+    };
+    window.requestAnimationFrame(step);
+  }
+
+  // Find counter on client-side
+  const counterEl = document.getElementById('counter-value');
+  if (counterEl) {
+    const endValue = parseInt(counterEl.getAttribute('data-count') || '0', 10);
+    // Animate from a slightly lower number for a "pop" effect on page load
+    animateValue(counterEl, Math.max(0, endValue - 20), endValue, 1500);
+  }
+</script>
+
+<style>
+  @font-face {
+    font-family: 'MonoVariant';
+    src: local('Menlo'), local('Monaco'), local('Courier New'), monospace;
+  }
+  #counter-value {
+    font-family: 'MonoVariant', monospace;
+  }
+</style>
