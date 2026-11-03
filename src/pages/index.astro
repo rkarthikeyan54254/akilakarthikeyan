@@ -69,6 +69,7 @@ const featuredStories = allStories
 // Filter Audio Stories for Slider
 const audioStories = allStories
   .filter(story => story.hasAudio)
+  .sort((a, b) => b.publishDate.valueOf() - a.publishDate.valueOf())
   .map(story => ({
     ...story,
     url: `/stories/${story.slug}`
@@ -165,3 +166,4 @@ const audioStories = allStories
     </a>
   </div>
 </Layout>
+
