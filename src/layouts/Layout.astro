@@ -4,9 +4,11 @@ interface Props {
   description?: string;
   image?: string;
   currentUrl?: string;
+  audioUrl?: string;
+  article?: boolean;
 }
 
-const { title = "Default Title", description, image } = Astro.props;
+const { title = "Default Title", description, image, audioUrl, article = false } = Astro.props;
 
 const genres = [
   { id: 'நகைச்சுவை', name: 'நகைச்சுவை' },
@@ -33,6 +35,9 @@ try {
 
 const siteUrl = 'https://akilakarthikeyan.com';
 const canonicalURL = new URL(Astro.url.pathname, siteUrl).toString();
+const audioURL = audioUrl ? new URL(audioUrl, siteUrl).toString() : undefined;
+const socialDescription = `${description || 'தமிழ் சிறுகதைகள் தொகுப்பு'}${audioURL ? ' குரல் பதிவுடன் — கதையை வாசிக்கவும், கேட்கவும்.' : ''}`;
+const imageType = /\.png(?:\?|$)/i.test(image || '') ? 'image/png' : /\.webp(?:\?|$)/i.test(image || '') ? 'image/webp' : /\.jpe?g(?:\?|$)/i.test(image || '') || !image ? 'image/jpeg' : undefined;
 
 let imageURL = '/default-og.jpg';
 if (image) {
@@ -75,18 +80,29 @@ if (image) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:site_name" content="அகிலா கார்த்திகேயன்" />
+    <meta property="og:locale" content="ta_IN" />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={description || 'தமிழ் சிறுகதைகள் தொகுப்பு'} />
+    <meta property="og:description" content={socialDescription} />
     <meta property="og:image" content={imageURL} />
+    <meta property="og:image:secure_url" content={imageURL} />
+    <meta property="og:image:alt" content={title} />
+    {imageType && <meta property="og:image:type" content={imageType} />}
+    {audioURL && <>
+      <meta property="og:audio" content={audioURL} />
+      <meta property="og:audio:secure_url" content={audioURL} />
+      <meta property="og:audio:type" content="audio/mpeg" />
+    </>}
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={canonicalURL} />
     <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description || 'தமிழ் சிறுகதைகள் தொகுப்பு'} />
+    <meta property="twitter:description" content={socialDescription} />
     <meta property="twitter:image" content={imageURL} />
+    <meta name="twitter:image:alt" content={title} />
     
     <!-- Canonical URL -->
     <link rel="canonical" href={canonicalURL} />

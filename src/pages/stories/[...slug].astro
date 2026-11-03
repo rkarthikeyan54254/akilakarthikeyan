@@ -148,6 +148,8 @@ const allRelated = [...staticRelated, ...dynamicRelated]
 <Layout title={`${story.title} - அகிலா கார்த்திகேயன்`}
   description={story.description}
   image={story.image}
+  audioUrl={story.audio_url}
+  article={true}
   currentUrl={currentUrl}>
 
   <div class="max-w-4xl mx-auto px-4">
@@ -185,7 +187,7 @@ const allRelated = [...staticRelated, ...dynamicRelated]
       </div>
 
       {story.audio_url && (
-        <div class="mb-12 p-6 bg-blue-50/50 border border-blue-100 rounded-2xl shadow-sm">
+        <div id="story-audio" class="mb-12 p-6 bg-blue-50/50 border border-blue-100 rounded-2xl shadow-sm scroll-mt-24">
           <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-blue-900">
             <i class="fa-solid fa-circle-play text-blue-600"></i>
             கதையை கேளுங்கள்
@@ -201,7 +203,7 @@ const allRelated = [...staticRelated, ...dynamicRelated]
         {isDynamic ? <div set:html={contentHtml} /> : <Content currentUrl={currentUrl} />}
       </div>
 
-      <ShareButton title={story.title} url={currentUrl} description={story.description} />
+      <ShareButton title={story.title} url={currentUrl} description={story.description} image={story.image} audioUrl={story.audio_url} />
 
       <!-- Similar Stories Section -->
       {allRelated.length > 0 && (

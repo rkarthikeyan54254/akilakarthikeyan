@@ -1,106 +1,107 @@
 ---
+import { buildStoryShare } from '../lib/sharing.js';
 interface Props {
   title: string;
   url: string;
   description?: string;
+  image?: string;
+  audioUrl?: string;
 }
-
-const { title, url, description } = Astro.props;
-
-// Ensure URL is absolute for social sharing
+const { title, url, description, image, audioUrl } = Astro.props;
+const share = buildStoryShare({ title, url, description, audioUrl });
 const siteUrl = 'https://akilakarthikeyan.com';
-const absoluteUrl = url.startsWith('http') ? url : `${siteUrl}${url}`;
-
-const shareText = description 
-  ? `${title}\n\n${description}\n\n` 
-  : `${title}\n\n`;
-
-const encodedText = encodeURIComponent(shareText);
-const encodedUrl = encodeURIComponent(absoluteUrl);
-
-const socialLinks = [
-  {
-    name: 'WhatsApp',
-    icon: 'fa-whatsapp',
-    href: `https://wa.me/?text=${encodedText}${encodedUrl}`,
-    color: 'hover:bg-[#25D366] hover:text-white',
-    bg: 'bg-green-50 text-green-600'
-  },
-  {
-    name: 'Facebook',
-    icon: 'fa-facebook-f',
-    href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-    color: 'hover:bg-[#1877F2] hover:text-white',
-    bg: 'bg-blue-50 text-blue-600'
-  },
-  {
-    name: 'X (Twitter)',
-    icon: 'fa-x-twitter',
-    href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodedUrl}`,
-    color: 'hover:bg-black hover:text-white',
-    bg: 'bg-gray-50 text-gray-900'
-  }
+const media = [
+  { kind: 'image', url: new URL(image || '/default-og.jpg', siteUrl).href, label: 'படத்தைப் பகிர', download: 'படத்தைப் பதிவிறக்க' },
+  ...(audioUrl ? [{ kind: 'audio', url: new URL(audioUrl, siteUrl).href, label: 'ஒலியைப் பகிர', download: 'ஒலியைப் பதிவிறக்க' }] : [])
 ];
 ---
-
-<div class="my-12 py-8 border-y border-gray-100 bg-gray-50/50 rounded-2xl px-6">
-  <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-    <div>
-      <h3 class="text-xl font-bold text-gray-900 mb-1">இந்தக் கதை உங்களுக்குப் பிடித்திருக்கிறதா?</h3>
-      <p class="text-gray-600">உங்கள் நண்பர்களுடன் பகிர்ந்து அவர்களை மகிழ்வியுங்கள்!</p>
-    </div>
-    
-    <div class="flex items-center gap-3">
-      {socialLinks.map(link => (
-        <a
-          href={link.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          class={`w-12 h-12 flex items-center justify-center rounded-full transition-all transform hover:scale-110 shadow-sm ${link.bg} ${link.color}`}
-          aria-label={`Share on ${link.name}`}
-        >
-          <i class={`fa-brands ${link.icon} text-xl`}></i>
-        </a>
-      ))}
-      
-      <button
-        id="copy-link-btn"
-        class="w-12 h-12 flex items-center justify-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-all transform hover:scale-110 shadow-sm"
-        aria-label="Copy link"
-        data-url={url}
-      >
-        <i class="fa-solid fa-link text-lg"></i>
-      </button>
+<section class="story-share not-prose my-12 rounded-2xl border border-gray-200 bg-white p-5 sm:p-6" data-title={title} data-text={share.text} data-url={share.shareUrl}>
+  <div class="flex items-start gap-4 mb-5">
+    <img src={media[0].url} alt={title} width="96" height="72" loading="lazy" class="w-24 h-[72px] object-cover rounded-lg flex-shrink-0" />
+    <div class="min-w-0">
+      <h3 class="text-xl font-bold text-gray-900 mb-1">இந்தக் கதையைப் பகிருங்கள்</h3>
+      <p class="text-gray-600 text-sm leading-relaxed">{audioUrl ? 'படத்துடன் கதையின் இணைப்பைப் பகிருங்கள். குரல் பதிவையும் அதே பக்கத்தில் கேட்கலாம்.' : 'படத்துடன் கதையின் இணைப்பை உங்கள் நண்பர்களுடன் பகிருங்கள்.'}</p>
     </div>
   </div>
-</div>
+  <div class="flex flex-wrap gap-3">
+    <a href={share.whatsapp} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp" class="inline-flex items-center gap-2 rounded-full px-5 py-3 bg-green-600 text-white font-semibold hover:bg-green-700"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i>WhatsApp</a>
+    <a href={share.facebook} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook" class="inline-flex items-center gap-2 rounded-full px-5 py-3 bg-blue-600 text-white font-semibold hover:bg-blue-700"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i>Facebook</a>
+    <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(share.shareUrl)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on X (Twitter)" class="inline-flex items-center justify-center rounded-full w-12 h-12 bg-gray-100 text-gray-900 hover:bg-gray-200"><i class="fa-brands fa-x-twitter" aria-hidden="true"></i></a>
+    <button type="button" data-copy-link aria-label="Copy link" class="inline-flex items-center gap-2 rounded-full px-4 py-3 bg-gray-100 text-gray-800 hover:bg-gray-200"><i class="fa-solid fa-link" aria-hidden="true"></i>இணைப்பை நகலெடு</button>
+  </div>
+  <div class="mt-5 pt-4 border-t border-gray-100 flex flex-wrap gap-x-5 gap-y-3">
+    {media.map(item => <div class="flex flex-wrap items-center gap-3">
+      <button type="button" data-share-media={item.url} data-label={item.label} class="text-sm font-semibold text-blue-700 hover:underline">{item.label}</button>
+      <button type="button" data-download-media={item.url} class="text-sm text-gray-600 hover:underline">{item.download}</button>
+    </div>)}
+  </div>
+  <p data-share-status role="status" aria-live="polite" class="text-sm text-gray-600 mt-3 empty:hidden"></p>
+</section>
 
 <script>
-  const copyBtn = document.getElementById('copy-link-btn');
-  
-  copyBtn?.addEventListener('click', async () => {
-    const url = copyBtn.getAttribute('data-url');
-    if (url) {
-      try {
-        // Use the human-readable version (decoded) for sharing. 
-        // For Latin slugs, this will be exactly the same. 
-        // For Tamil, it will copy the characters instead of %-encoded mess.
-        const readableUrl = decodeURIComponent(url);
-        await navigator.clipboard.writeText(readableUrl);
-        
-        const originalIcon = copyBtn.innerHTML;
-        copyBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
-        copyBtn.classList.remove('bg-gray-200');
-        copyBtn.classList.add('bg-green-500', 'text-white');
-        
-        setTimeout(() => {
-          copyBtn.innerHTML = originalIcon;
-          copyBtn.classList.remove('bg-green-500', 'text-white');
-          copyBtn.classList.add('bg-gray-200');
-        }, 2000);
-      } catch (err) {
-        console.error('Failed to copy: ', err);
-      }
-    }
-  });
+  import { prepareShareFile, sharePreparedFile } from '../lib/sharing.js';
+  function initStorySharing() {
+    document.querySelectorAll<HTMLElement>('.story-share').forEach(section => {
+      if (section.dataset.bound) return;
+      section.dataset.bound = 'true';
+      const status = section.querySelector<HTMLElement>('[data-share-status]')!;
+      const files = new Map<string, File>();
+      const pending = new Map<string, Promise<File>>();
+      const getFile = async (url: string) => {
+        if (files.has(url)) return files.get(url)!;
+        if (!pending.has(url)) pending.set(url, prepareShareFile(url).then(file => { files.set(url, file); return file; }).finally(() => pending.delete(url)));
+        return pending.get(url)!;
+      };
+      const download = (file: File) => {
+        const objectUrl = URL.createObjectURL(file);
+        const link = document.createElement('a');
+        link.href = objectUrl; link.download = file.name;
+        document.body.append(link); link.click(); link.remove();
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+      };
+      section.querySelector<HTMLButtonElement>('[data-copy-link]')?.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(section.dataset.url!);
+          status.textContent = 'இணைப்பு நகலெடுக்கப்பட்டது.';
+        } catch {
+          status.textContent = 'இணைப்பை நகலெடுக்க முடியவில்லை. மேலுள்ள WhatsApp அல்லது Facebook பொத்தானைப் பயன்படுத்துங்கள்.';
+        }
+      });
+      section.querySelectorAll<HTMLButtonElement>('[data-share-media], [data-download-media]').forEach(button => {
+        button.addEventListener('click', async () => {
+          const url = button.dataset.shareMedia || button.dataset.downloadMedia!;
+          const shareFile = !!button.dataset.shareMedia;
+          const originalLabel = button.dataset.label || button.textContent!;
+          try {
+            // File sharing needs a fresh user gesture: prepare first, share on the next tap.
+            if (shareFile && files.has(url)) {
+              const result = await sharePreparedFile(files.get(url)!, { title: section.dataset.title!, text: section.dataset.text! });
+              if (result === 'unsupported') {
+                download(files.get(url)!);
+                status.textContent = 'கோப்பு பதிவிறக்கப்பட்டது. விரும்பிய செயலியில் இணைத்துப் பகிரலாம்.';
+              } else status.textContent = result === 'shared' ? 'பகிர்வு முடிந்தது.' : 'பகிர்வு ரத்து செய்யப்பட்டது.';
+              return;
+            }
+            button.disabled = true;
+            button.textContent = 'தயாராகிறது…';
+            const file = await getFile(url);
+            if (!shareFile || !navigator.share || !navigator.canShare?.({ files: [file] })) {
+              download(file);
+              status.textContent = 'கோப்பு பதிவிறக்கப்பட்டது. விரும்பிய செயலியில் இணைத்துப் பகிரலாம்.';
+              button.textContent = originalLabel;
+            } else {
+              button.textContent = `${originalLabel} →`;
+              status.textContent = 'கோப்பு தயார். பகிர மீண்டும் பொத்தானை அழுத்துங்கள்.';
+            }
+          } catch {
+            button.textContent = originalLabel;
+            status.textContent = 'பகிர முடியவில்லை. மீண்டும் முயற்சிக்கவும் அல்லது பதிவிறக்கப் பொத்தானைப் பயன்படுத்தவும்.';
+          } finally { button.disabled = false; }
+        });
+      });
+    });
+  }
+  initStorySharing();
+  document.addEventListener('astro:page-load', initStorySharing);
+  document.addEventListener('astro:after-swap', initStorySharing);
 </script>
